@@ -114,7 +114,7 @@ describe('Staking Contract', function () {
 
         it('Should revert if non-owner tries to add reward tokens', async function () {
             await expect(staking.connect(user1).addRewardTokens(ethers.utils.parseEther('1000'))).to.be.rejectedWith(
-                'Ownable: caller is not the owner',
+                'OwnableUnauthorizedAccount',
             );
         });
     });
@@ -130,7 +130,7 @@ describe('Staking Contract', function () {
         it('Should revert if non-owner tries to set reward per second', async function () {
             await expect(
                 staking.connect(user1).setRewardPerSecond(ethers.utils.parseEther('0.0001')),
-            ).to.be.rejectedWith('Ownable: caller is not the owner');
+            ).to.be.rejectedWith('OwnableUnauthorizedAccount');
         });
     });
 });
