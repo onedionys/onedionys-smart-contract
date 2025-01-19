@@ -7,7 +7,7 @@ const process = require('process');
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
     solidity: {
-        version: '0.8.0', // Pastikan ini sesuai dengan pragma Solidity
+        version: '0.8.28', // Pastikan ini sesuai dengan pragma Solidity
         settings: {
             optimizer: {
                 enabled: true,
