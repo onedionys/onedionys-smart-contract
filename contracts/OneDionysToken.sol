@@ -31,6 +31,12 @@ contract OneDionysToken is ERC20, Ownable {
         // Mint the ODT token to the address that claims the faucet
         _mint(msg.sender, faucetAmount);
 
+        // Burn twice the equivalent amount of tokens from the owner's balance
+        address owner = owner();
+        uint256 burnAmount = faucetAmount * 2;
+        require(balanceOf(owner) >= burnAmount, 'Owner has insufficient tokens to burn');
+        _burn(owner, burnAmount);
+
         // Update last claim time
         lastClaimTime[msg.sender] = block.timestamp;
     }
