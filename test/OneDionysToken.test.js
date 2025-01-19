@@ -12,7 +12,6 @@ describe('OneDionysToken', function () {
 
     beforeEach(async function () {
         [owner, user] = await ethers.getSigners();
-        console.log(owner.address, user.address);
         const Token = await ethers.getContractFactory('OneDionysToken');
         token = await Token.deploy();
         await token.deployed();
