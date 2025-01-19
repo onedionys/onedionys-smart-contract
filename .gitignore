@@ -52,7 +52,8 @@ www/
 # Ignore deployment files for a local node on Hardhat's Ignition
 ignition/deployments/chain-31337
 
-# JS Files
+# Urgent Files
 # Test Automated Script
 src/interact.js
 src/mintBurn.js
+wallets.json
