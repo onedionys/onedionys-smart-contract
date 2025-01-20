@@ -5,41 +5,43 @@ import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 
 contract OneDionysToken is ERC20, Ownable {
-    uint256 public initialSupply = 1_000_000_000 * 10 ** 18;
-    uint256 public faucetAmount = 100 * 10 ** 18;
-    uint256 public faucetLimit = 500 * 10 ** 18;
-    uint256 public totalFaucetDistributed;
+    uint256 public faucetAmount = 100 * 10 ** 18; // Number of tokens that can be claimed on the faucet (example: 100 ODT)
+    mapping(address => uint256) public lastClaimTime; // Last time claimed for each address
 
-    mapping(address => uint256) public lastClaimTime;
+    // Initial supply set at the time of contract deployment
+    uint256 public initialSupply = 100000000 * 10 ** 18; // 100 million ODT as initial sample supply
 
-    constructor() ERC20('Kojiesan Token V1', 'KJT1') Ownable(msg.sender) {
+    constructor() ERC20('One Dionys Token', 'ODT') Ownable(msg.sender) {
+        // Mint initial supply to contract owner's address
         _mint(msg.sender, initialSupply);
     }
 
+    // Function to mint tokens to a specific address (faucet)
     function mint(address to, uint256 amount) external onlyOwner {
         _mint(to, amount);
     }
 
+    // Function for claim faucet (ODT)
     function claimFaucet() external {
-        require(totalFaucetDistributed + faucetAmount <= faucetLimit, 'Faucet limit reached');
-
         require(
             lastClaimTime[msg.sender] == 0 || block.timestamp >= lastClaimTime[msg.sender] + 1 days,
             'You can only claim once every 24 hours'
         );
 
+        // Mint the ODT token to the address that claims the faucet
         _mint(msg.sender, faucetAmount);
 
-        totalFaucetDistributed += faucetAmount;
-
+        // Burn twice the equivalent amount of tokens from the owner's balance
         address owner = owner();
         uint256 burnAmount = faucetAmount * 2;
         require(balanceOf(owner) >= burnAmount, 'Owner has insufficient tokens to burn');
         _burn(owner, burnAmount);
 
+        // Update last claim time
         lastClaimTime[msg.sender] = block.timestamp;
     }
 
+    // Function for burn token
     function burn(uint256 amount) external {
         require(balanceOf(msg.sender) >= amount, 'Insufficient balance to burn');
         _burn(msg.sender, amount);
