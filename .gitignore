@@ -57,3 +57,7 @@ ignition/deployments/chain-31337
 src/interact.js
 src/mintBurn.js
 wallets.json
+wow.js
+src/newInteraction.js
+contracts/backup/
+test/backup/
