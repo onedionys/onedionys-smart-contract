@@ -7,130 +7,127 @@ use(chaiAsPromised);
 
 describe('Staking Contract', function () {
     let owner, user1, user2;
-    let staking, odtToken, teaToken;
+    let staking, odtToken;
 
-    // Setup untuk sebelum setiap test
     beforeEach(async function () {
-        // Mendapatkan akun
         [owner, user1, user2] = await ethers.getSigners();
 
-        // Deploy token ODT (ERC20 token)
         const ODTToken = await ethers.getContractFactory('OneDionysToken');
         odtToken = await ODTToken.deploy();
         await odtToken.deployed();
 
-        // Ambil kontrak TEA dari wallet utama (owner.address)
-        teaToken = await ethers.getContractAt('IERC20', owner.address); // Wallet utama memegang TEA
-
-        // Deploy kontrak Staking
         const Staking = await ethers.getContractFactory('Staking');
-        staking = await Staking.deploy(odtToken.address, owner.address); // Menggunakan address wallet utama untuk TEA
+        staking = await Staking.deploy(odtToken.address);
         await staking.deployed();
 
-        // Mint token untuk user dan owner
         await odtToken.mint(user1.address, ethers.utils.parseEther('100'));
         await odtToken.mint(user2.address, ethers.utils.parseEther('100'));
 
-        // Pastikan ada cukup TEA di wallet untuk reward
-        const teaAmount = ethers.utils.parseEther('1000');
-        await teaToken.transfer(staking.address, teaAmount); // Transfer TEA dari wallet utama ke kontrak staking
+        const rewardAmount = ethers.utils.parseEther('1000');
+        await odtToken.mint(owner.address, rewardAmount);
+        await odtToken.approve(staking.address, rewardAmount);
+        await staking.addRewardTokens(rewardAmount);
     });
 
     describe('Stake', function () {
-        it('Should allow users to stake ODT tokens', async function () {
-            await odtToken.connect(user1).approve(staking.address, ethers.utils.parseEther('100'));
-            await staking.connect(user1).stake(ethers.utils.parseEther('100'));
+        it('Should allow users to stake tokens', async function () {
+            await odtToken.connect(user1).approve(staking.address, ethers.utils.parseEther('50'));
+            await staking.connect(user1).stake(ethers.utils.parseEther('50'));
 
             const stakedAmount = await staking.stakedAmounts(user1.address);
-            expect(stakedAmount.toString()).to.equal(ethers.utils.parseEther('100').toString());
+            expect(stakedAmount.toString()).to.equal(ethers.utils.parseEther('50').toString());
         });
 
-        it('Should revert if staking amount is 0', async function () {
+        it('Should reject staking with 0 tokens', async function () {
             await expect(staking.connect(user1).stake(0)).to.be.rejectedWith('Amount should be greater than 0');
         });
     });
 
     describe('Unstake', function () {
         it('Should allow users to unstake tokens', async function () {
-            await odtToken.connect(user1).approve(staking.address, ethers.utils.parseEther('100'));
-            await staking.connect(user1).stake(ethers.utils.parseEther('100'));
-
-            await staking.connect(user1).unstake(ethers.utils.parseEther('50'));
+            await odtToken.connect(user1).approve(staking.address, ethers.utils.parseEther('50'));
+            await staking.connect(user1).stake(ethers.utils.parseEther('50'));
+            await staking.connect(user1).unstake(ethers.utils.parseEther('20'));
 
             const stakedAmount = await staking.stakedAmounts(user1.address);
-            expect(stakedAmount.toString()).to.equal(ethers.utils.parseEther('50').toString());
+            expect(stakedAmount.toString()).to.equal(ethers.utils.parseEther('30').toString());
         });
 
-        it('Should revert if user tries to unstake more than staked amount', async function () {
-            await odtToken.connect(user1).approve(staking.address, ethers.utils.parseEther('100'));
-            await staking.connect(user1).stake(ethers.utils.parseEther('100'));
+        it('Should reject unstaking more than staked amount', async function () {
+            await odtToken.connect(user1).approve(staking.address, ethers.utils.parseEther('50'));
+            await staking.connect(user1).stake(ethers.utils.parseEther('50'));
 
-            await expect(staking.connect(user1).unstake(ethers.utils.parseEther('200'))).to.be.rejectedWith(
+            await expect(staking.connect(user1).unstake(ethers.utils.parseEther('100'))).to.be.rejectedWith(
                 'Not enough staked',
             );
         });
     });
 
     describe('Claim Rewards', function () {
-        it('Should allow users to claim rewards after staking', async function () {
-            await odtToken.connect(user1).approve(staking.address, ethers.utils.parseEther('100'));
-            await staking.connect(user1).stake(ethers.utils.parseEther('100'));
+        it('Should allow users to claim rewards', async function () {
+            const stakingAmount = ethers.utils.parseEther('100');
+            const rewardPerSecond = ethers.utils.parseEther('0.00001');
+            const durationInSeconds = 86400;
+            const delta = ethers.BigNumber.from('1000000000000000');
 
-            // Fast forward time by 1 day
-            await ethers.provider.send('evm_increaseTime', [86400]); // 86400 seconds = 1 day
-            await ethers.provider.send('evm_mine', []);
-
+            await odtToken.connect(user1).approve(staking.address, stakingAmount);
+            await staking.connect(user1).stake(stakingAmount);
+            await ethers.provider.send('evm_increaseTime', [durationInSeconds]);
+            await ethers.provider.send('evm_mine');
             await staking.connect(user1).claimRewards();
 
-            const userBalance = await teaToken.balanceOf(user1.address);
-            expect(userBalance).to.be.gt(0); // Pastikan user menerima reward
+            const expectedReward = rewardPerSecond
+                .mul(stakingAmount)
+                .mul(durationInSeconds)
+                .div(ethers.constants.WeiPerEther);
+            const userBalance = await odtToken.balanceOf(user1.address);
+
+            const difference = userBalance.sub(expectedReward).abs();
+
+            expect(difference.lte(delta)).to.be.true;
         });
 
-        it('Should revert if no tokens are staked', async function () {
+        it('Should reject claiming rewards with no staked tokens', async function () {
             await expect(staking.connect(user2).claimRewards()).to.be.rejectedWith('No tokens staked');
-        });
-
-        it('Should revert if not enough reward tokens in contract', async function () {
-            await odtToken.connect(user1).approve(staking.address, ethers.utils.parseEther('100'));
-            await staking.connect(user1).stake(ethers.utils.parseEther('100'));
-
-            // Set reward tokens to 0
-            await teaToken.transfer(staking.address, ethers.utils.parseEther('0'));
-
-            await expect(staking.connect(user1).claimRewards()).to.be.rejectedWith(
-                'Not enough TEA in contract for rewards',
-            );
         });
     });
 
     describe('Add Reward Tokens', function () {
         it('Should allow owner to add reward tokens', async function () {
-            await teaToken.connect(owner).approve(staking.address, ethers.utils.parseEther('1000'));
-            await staking.connect(owner).addRewardTokens(ethers.utils.parseEther('1000'));
+            const additionalReward = ethers.utils.parseEther('500');
+            await odtToken.mint(owner.address, additionalReward);
+            await odtToken.approve(staking.address, additionalReward);
+            await staking.addRewardTokens(additionalReward);
 
-            const contractBalance = await teaToken.balanceOf(staking.address);
-            expect(contractBalance).to.equal(ethers.utils.parseEther('10000').add(ethers.utils.parseEther('1000')));
+            const contractBalance = await odtToken.balanceOf(staking.address);
+            expect(contractBalance.toString()).to.equal(ethers.utils.parseEther('1500').toString());
         });
 
-        it('Should revert if non-owner tries to add reward tokens', async function () {
-            await expect(staking.connect(user1).addRewardTokens(ethers.utils.parseEther('1000'))).to.be.rejectedWith(
+        it('Should reject non-owner adding reward tokens', async function () {
+            const additionalReward = ethers.utils.parseEther('500');
+            await odtToken.mint(user1.address, additionalReward);
+            await odtToken.connect(user1).approve(staking.address, additionalReward);
+
+            await expect(staking.connect(user1).addRewardTokens(additionalReward)).to.be.rejectedWith(
                 'OwnableUnauthorizedAccount',
             );
         });
     });
 
     describe('Set Reward Per Second', function () {
-        it('Should allow owner to set reward per second', async function () {
-            await staking.connect(owner).setRewardPerSecond(ethers.utils.parseEther('0.0001'));
+        it('Should allow owner to set new reward rate', async function () {
+            const newRewardRate = ethers.utils.parseEther('0.0001');
+            await staking.setRewardPerSecond(newRewardRate);
 
-            const rewardPerSecond = await staking.rewardPerSecond();
-            expect(rewardPerSecond.toString()).to.equal(ethers.utils.parseEther('0.0001').toString());
+            const currentRewardRate = await staking.rewardPerSecond();
+            expect(currentRewardRate.toString()).to.equal(newRewardRate.toString());
         });
 
-        it('Should revert if non-owner tries to set reward per second', async function () {
-            await expect(
-                staking.connect(user1).setRewardPerSecond(ethers.utils.parseEther('0.0001')),
-            ).to.be.rejectedWith('OwnableUnauthorizedAccount');
+        it('Should reject non-owner setting new reward rate', async function () {
+            const newRewardRate = ethers.utils.parseEther('0.0001');
+            await expect(staking.connect(user1).setRewardPerSecond(newRewardRate)).to.be.rejectedWith(
+                'OwnableUnauthorizedAccount',
+            );
         });
     });
 });
