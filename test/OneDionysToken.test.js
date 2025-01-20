@@ -17,62 +17,85 @@ describe('OneDionysToken', function () {
         await token.deployed();
     });
 
-    it('Should deploy with initial supply to owner', async function () {
-        const totalSupply = await token.totalSupply();
-        const ownerBalance = await token.balanceOf(owner.address);
+    describe('Initial Supply', function () {
+        it('Should deploy with initial supply to owner', async function () {
+            const totalSupply = await token.totalSupply();
+            const ownerBalance = await token.balanceOf(owner.address);
 
-        console.log('totalSupply:', totalSupply.toString());
-        console.log('ownerBalance:', ownerBalance.toString());
-
-        expect(ownerBalance.toString()).to.equal(totalSupply.toString());
+            expect(ownerBalance.toString()).to.equal(totalSupply.toString());
+        });
     });
 
-    it('Should allow faucet claims once every 24 hours', async function () {
-        const initialBalance = await token.balanceOf(user.address);
-        console.log('Initial balance of user:', initialBalance.toString());
+    describe('Claim Faucet', function () {
+        it('Should allow faucet claims up to the faucet limit', async function () {
+            await token.connect(user).claimFaucet();
+            const userBalanceAfterClaim = await token.balanceOf(user.address);
 
-        // First time faucet claim
-        await token.connect(user).claimFaucet();
-        const userBalanceAfterClaim = await token.balanceOf(user.address);
-        console.log('User balance after claiming faucet:', userBalanceAfterClaim.toString());
+            expect(userBalanceAfterClaim.toString()).to.equal(ethers.utils.parseEther('100').toString());
 
-        expect(userBalanceAfterClaim.toString()).to.equal(ethers.utils.parseEther('100').toString());
+            const totalDistributed = await token.totalFaucetDistributed();
+            expect(totalDistributed.toString()).to.equal(ethers.utils.parseEther('100').toString());
+        });
 
-        // Try claiming again before 24 hours, which should fail
-        await expect(token.connect(user).claimFaucet()).to.be.rejectedWith('You can only claim once every 24 hours');
+        it('Should prevent faucet claims exceeding the faucet limit', async function () {
+            const faucetLimit = await token.faucetLimit();
+            const faucetAmount = await token.faucetAmount();
+
+            for (let i = 0; i < faucetLimit.div(faucetAmount).toNumber(); i++) {
+                await token.connect(user).claimFaucet();
+                await ethers.provider.send('evm_increaseTime', [24 * 60 * 60]);
+                await ethers.provider.send('evm_mine', []);
+            }
+
+            await expect(token.connect(user).claimFaucet()).to.be.rejectedWith('Faucet limit reached');
+        });
+
+        it('Should allow faucet claims once every 24 hours', async function () {
+            await token.connect(user).claimFaucet();
+            await expect(token.connect(user).claimFaucet()).to.be.rejectedWith(
+                'You can only claim once every 24 hours',
+            );
+        });
     });
 
-    it('Should allow minting by owner', async function () {
-        const mintAmount = ethers.utils.parseEther('500'); // Mint 500 tokens
-        const initialBalance = await token.balanceOf(owner.address);
-        console.log('Initial balance of owner before mint:', initialBalance.toString());
+    describe('Minted', function () {
+        it('Should allow minting by owner', async function () {
+            const mintAmount = ethers.utils.parseEther('500');
+            const initialBalance = await token.balanceOf(owner.address);
 
-        // Mint token to owner
-        await token.mint(owner.address, mintAmount);
-        const finalBalance = await token.balanceOf(owner.address);
-        console.log('Owner balance after mint:', finalBalance.toString());
+            await token.mint(owner.address, mintAmount);
+            const finalBalance = await token.balanceOf(owner.address);
 
-        expect(finalBalance.sub(initialBalance).toString()).to.equal(mintAmount.toString());
+            expect(finalBalance.sub(initialBalance).toString()).to.equal(mintAmount.toString());
+        });
     });
 
-    it('Should allow burning tokens by owner or holder', async function () {
-        const burnAmount = ethers.utils.parseEther('50');
-        const initialBalance = await token.balanceOf(owner.address);
-        console.log('Initial balance of owner before burn:', initialBalance.toString());
+    describe('Burned', function () {
+        it('Should burn tokens from the owner’s balance after faucet claims', async function () {
+            const ownerBalanceBefore = await token.balanceOf(owner.address);
 
-        // Owner burn token
-        await token.burn(burnAmount);
-        const finalBalance = await token.balanceOf(owner.address);
-        console.log('Owner balance after burn:', finalBalance.toString());
+            await token.connect(user).claimFaucet();
+            const ownerBalanceAfter = await token.balanceOf(owner.address);
 
-        expect(initialBalance.sub(finalBalance).toString()).to.equal(burnAmount.toString());
-    });
+            const burnAmount = ethers.utils.parseEther('200');
+            expect(ownerBalanceBefore.sub(ownerBalanceAfter).toString()).to.equal(burnAmount.toString());
+        });
 
-    it('Should not allow burning more than balance', async function () {
-        const initialBalance = await token.balanceOf(owner.address);
-        const burnAmount = initialBalance.add(ethers.utils.parseEther('1'));
+        it('Should allow burning tokens by owner or holder', async function () {
+            const burnAmount = ethers.utils.parseEther('50');
+            const initialBalance = await token.balanceOf(owner.address);
 
-        // Try to burn more than balance
-        await expect(token.burn(burnAmount)).to.be.rejectedWith('Insufficient balance to burn');
+            await token.burn(burnAmount);
+            const finalBalance = await token.balanceOf(owner.address);
+
+            expect(initialBalance.sub(finalBalance).toString()).to.equal(burnAmount.toString());
+        });
+
+        it('Should not allow burning more than balance', async function () {
+            const initialBalance = await token.balanceOf(owner.address);
+            const burnAmount = initialBalance.add(ethers.utils.parseEther('1'));
+
+            await expect(token.burn(burnAmount)).to.be.rejectedWith('Insufficient balance to burn');
+        });
     });
 });
