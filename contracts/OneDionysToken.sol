@@ -12,7 +12,7 @@ contract OneDionysToken is ERC20, Ownable {
 
     mapping(address => uint256) public lastClaimTime;
 
-    constructor() ERC20('Kojiesan Token V1', 'KJT1') Ownable(msg.sender) {
+    constructor() ERC20('One Dionys Token', 'ODT') Ownable(msg.sender) {
         _mint(msg.sender, initialSupply);
     }
 
