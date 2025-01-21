@@ -7,7 +7,7 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 contract OneDionysToken is ERC20, Ownable {
     uint256 public initialSupply = 1_000_000_000 * 10 ** 18;
     uint256 public faucetAmount = 100 * 10 ** 18;
-    uint256 public faucetLimit = 500 * 10 ** 18;
+    uint256 public faucetLimit = 500_000_000 * 10 ** 18;
     uint256 public totalFaucetDistributed;
 
     mapping(address => uint256) public lastClaimTime;
