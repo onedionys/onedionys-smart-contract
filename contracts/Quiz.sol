@@ -5,7 +5,7 @@ import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 
 contract Quiz is Ownable {
-    IERC20 public odtToken;
+    IERC20 public token;
 
     uint256 public totalRewardPool;
     uint256 public maxReward = 10 * 3 * 10 ** 18;
@@ -18,8 +18,8 @@ contract Quiz is Ownable {
     event RewardsClaimed(address indexed user, uint256 reward);
     event RewardTokensAdded(uint256 amount);
 
-    constructor(address _odtToken) Ownable(msg.sender) {
-        odtToken = IERC20(_odtToken);
+    constructor(address _token) Ownable(msg.sender) {
+        token = IERC20(_token);
     }
 
     function joinQuiz() external {
@@ -27,14 +27,14 @@ contract Quiz is Ownable {
         uint256 ownerShare = 5 * 10 ** 18;
         uint256 contractShare = 10 * 10 ** 18;
 
-        require(odtToken.balanceOf(msg.sender) >= requiredAmount, 'Not enough ODT to join');
+        require(token.balanceOf(msg.sender) >= requiredAmount, 'Not enough token to join');
 
-        uint256 allowance = odtToken.allowance(msg.sender, address(this));
+        uint256 allowance = token.allowance(msg.sender, address(this));
         require(allowance >= requiredAmount, 'Allowance not sufficient to join quiz');
 
-        odtToken.transferFrom(msg.sender, owner(), ownerShare);
+        token.transferFrom(msg.sender, owner(), ownerShare);
 
-        odtToken.transferFrom(msg.sender, address(this), contractShare);
+        token.transferFrom(msg.sender, address(this), contractShare);
 
         isParticipant[msg.sender] = true;
 
@@ -73,7 +73,7 @@ contract Quiz is Ownable {
         require(totalRewardPool >= reward, 'Not enough tokens in contract for rewards');
 
         totalRewardPool -= reward;
-        odtToken.transfer(user, reward);
+        token.transfer(user, reward);
         userPoints[user] = 0;
 
         emit RewardsClaimed(user, reward);
@@ -82,10 +82,10 @@ contract Quiz is Ownable {
     function addRewardTokens(uint256 amount) external onlyOwner {
         require(amount > 0, 'Amount should be greater than 0');
 
-        uint256 allowance = odtToken.allowance(msg.sender, address(this));
+        uint256 allowance = token.allowance(msg.sender, address(this));
         require(allowance >= amount, 'Allowance not sufficient to add reward tokens');
 
-        odtToken.transferFrom(msg.sender, address(this), amount);
+        token.transferFrom(msg.sender, address(this), amount);
         totalRewardPool += amount;
 
         emit RewardTokensAdded(amount);
