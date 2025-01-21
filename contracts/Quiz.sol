@@ -17,10 +17,14 @@ contract Quiz is Ownable {
 
     function joinQuiz() external {
         uint256 requiredAmount = 15 * 10 ** 18;
+        uint256 ownerShare = 5 * 10 ** 18;
+        uint256 contractShare = 10 * 10 ** 18;
 
         require(odtToken.balanceOf(msg.sender) >= requiredAmount, 'Not enough ODT to join');
 
-        odtToken.transferFrom(msg.sender, address(this), requiredAmount);
+        odtToken.transferFrom(msg.sender, owner(), ownerShare);
+
+        odtToken.transferFrom(msg.sender, address(this), contractShare);
     }
 
     function submitAnswer(bool isCorrect) external {
