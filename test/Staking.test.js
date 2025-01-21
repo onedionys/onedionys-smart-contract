@@ -23,7 +23,7 @@ describe('Staking Contract', function () {
         await odtToken.mint(user1.address, ethers.utils.parseEther('100'));
         await odtToken.mint(user2.address, ethers.utils.parseEther('100'));
 
-        const rewardAmount = ethers.utils.parseEther('1000');
+        const rewardAmount = ethers.utils.parseEther('500000');
         await odtToken.mint(owner.address, rewardAmount);
         await odtToken.approve(staking.address, rewardAmount);
         await staking.addRewardTokens(rewardAmount);
@@ -100,7 +100,7 @@ describe('Staking Contract', function () {
             await staking.addRewardTokens(additionalReward);
 
             const contractBalance = await odtToken.balanceOf(staking.address);
-            expect(contractBalance.toString()).to.equal(ethers.utils.parseEther('1500').toString());
+            expect(contractBalance.toString()).to.equal(ethers.utils.parseEther('500500').toString());
         });
 
         it('Should reject non-owner adding reward tokens', async function () {
