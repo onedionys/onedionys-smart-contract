@@ -5,16 +5,16 @@ async function main() {
     const [deployer] = await hre.ethers.getSigners();
     console.log('Deploying contracts with the account:', deployer.address);
 
-    const OneDionysToken = await hre.ethers.getContractFactory('OneDionysToken');
-    const oneDionysToken = await OneDionysToken.deploy();
-    console.log('OneDionysToken deployed to:', oneDionysToken.address);
+    const Token = await hre.ethers.getContractFactory('Token');
+    const token = await Token.deploy();
+    console.log('Token deployed to:', token.address);
 
     const Staking = await hre.ethers.getContractFactory('Staking');
-    const staking = await Staking.deploy(oneDionysToken.address);
+    const staking = await Staking.deploy(token.address);
     console.log('Staking contract deployed to:', staking.address);
 
     const Quiz = await hre.ethers.getContractFactory('Quiz');
-    const quiz = await Quiz.deploy(oneDionysToken.address);
+    const quiz = await Quiz.deploy(token.address);
     console.log('Quiz contract deployed to:', quiz.address);
 
     const NFTCollection = await hre.ethers.getContractFactory('NFTCollection');
@@ -22,7 +22,7 @@ async function main() {
     console.log('NFTCollection contract deployed to:', nftCollection.address);
 
     const Lottery = await hre.ethers.getContractFactory('Lottery');
-    const lottery = await Lottery.deploy(oneDionysToken.address, nftCollection.address);
+    const lottery = await Lottery.deploy(token.address, nftCollection.address);
     console.log('Lottery contract deployed to:', lottery.address);
 }
 
