@@ -6,38 +6,48 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 
 contract Quiz is Ownable {
     IERC20 public odtToken;
-    IERC20 public teaToken;
+
+    uint256 public totalRewardPool;
 
     mapping(address => uint256) public userPoints;
 
-    constructor(address _odtToken, address _teaToken) Ownable(msg.sender) {
+    constructor(address _odtToken) Ownable(msg.sender) {
         odtToken = IERC20(_odtToken);
-        teaToken = IERC20(_teaToken);
     }
 
     function joinQuiz() external {
-        require(odtToken.balanceOf(msg.sender) >= 10 * 10 ** 18, 'Not enough ODT to join');
-        require(odtToken.transferFrom(msg.sender, address(this), 10 * 10 ** 18), 'Transfer failed');
+        uint256 requiredAmount = 15 * 10 ** 18;
+
+        require(odtToken.balanceOf(msg.sender) >= requiredAmount, 'Not enough ODT to join');
+
+        odtToken.transferFrom(msg.sender, address(this), requiredAmount);
     }
 
-    function submitAnswer(uint256 /* questionId */, bool isCorrect) external {
+    function submitAnswer(bool isCorrect) external {
         if (isCorrect) {
             userPoints[msg.sender]++;
         }
     }
 
-    function claimReward() external {
-        uint256 points = userPoints[msg.sender];
-        require(points > 0, 'No points to claim');
+    function claimRewards() external {
+        require(userPoints[msg.sender] > 0, 'No points to claim');
+        _claimRewards(msg.sender);
+    }
 
+    function _claimRewards(address user) internal {
+        uint256 points = userPoints[msg.sender];
         uint256 reward = points * 3 * 10 ** 18;
-        require(teaToken.balanceOf(address(this)) >= reward, 'Not enough TEA in contract');
-        teaToken.transfer(msg.sender, reward);
+
+        require(totalRewardPool >= reward, 'Not enough tokens in contract for rewards');
+
+        totalRewardPool -= reward;
+        odtToken.transfer(user, reward);
         userPoints[msg.sender] = 0;
     }
 
     function addRewardTokens(uint256 amount) external onlyOwner {
         require(amount > 0, 'Amount should be greater than 0');
-        teaToken.transferFrom(msg.sender, address(this), amount);
+        odtToken.transferFrom(msg.sender, address(this), amount);
+        totalRewardPool += amount;
     }
 }
