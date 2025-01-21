@@ -29,14 +29,19 @@ contract Quiz is Ownable {
         }
     }
 
+    function calculateReward(address user) public view returns (uint256) {
+        uint256 points = userPoints[user];
+        uint256 reward = points * 3 * 10 ** 18;
+        return reward;
+    }
+
     function claimRewards() external {
         require(userPoints[msg.sender] > 0, 'No points to claim');
         _claimRewards(msg.sender);
     }
 
     function _claimRewards(address user) internal {
-        uint256 points = userPoints[msg.sender];
-        uint256 reward = points * 3 * 10 ** 18;
+        uint256 reward = calculateReward(user);
 
         require(totalRewardPool >= reward, 'Not enough tokens in contract for rewards');
 
