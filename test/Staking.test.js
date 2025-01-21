@@ -7,31 +7,31 @@ use(chaiAsPromised);
 
 describe('Staking Contract', function () {
     let owner, user1, user2;
-    let staking, odtToken;
+    let staking, token;
 
     beforeEach(async function () {
         [owner, user1, user2] = await ethers.getSigners();
 
-        const ODTToken = await ethers.getContractFactory('OneDionysToken');
-        odtToken = await ODTToken.deploy();
-        await odtToken.deployed();
+        const Token = await ethers.getContractFactory('Token');
+        token = await Token.deploy();
+        await token.deployed();
 
         const Staking = await ethers.getContractFactory('Staking');
-        staking = await Staking.deploy(odtToken.address);
+        staking = await Staking.deploy(token.address);
         await staking.deployed();
 
-        await odtToken.mint(user1.address, ethers.utils.parseEther('100'));
-        await odtToken.mint(user2.address, ethers.utils.parseEther('100'));
+        await token.mint(user1.address, ethers.utils.parseEther('100'));
+        await token.mint(user2.address, ethers.utils.parseEther('100'));
 
         const rewardAmount = ethers.utils.parseEther('500000');
-        await odtToken.mint(owner.address, rewardAmount);
-        await odtToken.approve(staking.address, rewardAmount);
+        await token.mint(owner.address, rewardAmount);
+        await token.approve(staking.address, rewardAmount);
         await staking.addRewardTokens(rewardAmount);
     });
 
     describe('Stake', function () {
         it('Should allow users to stake tokens', async function () {
-            await odtToken.connect(user1).approve(staking.address, ethers.utils.parseEther('50'));
+            await token.connect(user1).approve(staking.address, ethers.utils.parseEther('50'));
             await staking.connect(user1).stake(ethers.utils.parseEther('50'));
 
             const stakedAmount = await staking.stakedAmounts(user1.address);
@@ -45,7 +45,7 @@ describe('Staking Contract', function () {
 
     describe('Unstake', function () {
         it('Should allow users to unstake tokens', async function () {
-            await odtToken.connect(user1).approve(staking.address, ethers.utils.parseEther('50'));
+            await token.connect(user1).approve(staking.address, ethers.utils.parseEther('50'));
             await staking.connect(user1).stake(ethers.utils.parseEther('50'));
             await staking.connect(user1).unstake(ethers.utils.parseEther('20'));
 
@@ -54,7 +54,7 @@ describe('Staking Contract', function () {
         });
 
         it('Should reject unstaking more than staked amount', async function () {
-            await odtToken.connect(user1).approve(staking.address, ethers.utils.parseEther('50'));
+            await token.connect(user1).approve(staking.address, ethers.utils.parseEther('50'));
             await staking.connect(user1).stake(ethers.utils.parseEther('50'));
 
             await expect(staking.connect(user1).unstake(ethers.utils.parseEther('100'))).to.be.rejectedWith(
@@ -70,7 +70,7 @@ describe('Staking Contract', function () {
             const durationInSeconds = 86400;
             const delta = ethers.BigNumber.from('1000000000000000');
 
-            await odtToken.connect(user1).approve(staking.address, stakingAmount);
+            await token.connect(user1).approve(staking.address, stakingAmount);
             await staking.connect(user1).stake(stakingAmount);
             await ethers.provider.send('evm_increaseTime', [durationInSeconds]);
             await ethers.provider.send('evm_mine');
@@ -80,7 +80,7 @@ describe('Staking Contract', function () {
                 .mul(stakingAmount)
                 .mul(durationInSeconds)
                 .div(ethers.constants.WeiPerEther);
-            const userBalance = await odtToken.balanceOf(user1.address);
+            const userBalance = await token.balanceOf(user1.address);
 
             const difference = userBalance.sub(expectedReward).abs();
 
@@ -95,18 +95,18 @@ describe('Staking Contract', function () {
     describe('Add Reward Tokens', function () {
         it('Should allow owner to add reward tokens', async function () {
             const additionalReward = ethers.utils.parseEther('500');
-            await odtToken.mint(owner.address, additionalReward);
-            await odtToken.approve(staking.address, additionalReward);
+            await token.mint(owner.address, additionalReward);
+            await token.approve(staking.address, additionalReward);
             await staking.addRewardTokens(additionalReward);
 
-            const contractBalance = await odtToken.balanceOf(staking.address);
+            const contractBalance = await token.balanceOf(staking.address);
             expect(contractBalance.toString()).to.equal(ethers.utils.parseEther('500500').toString());
         });
 
         it('Should reject non-owner adding reward tokens', async function () {
             const additionalReward = ethers.utils.parseEther('500');
-            await odtToken.mint(user1.address, additionalReward);
-            await odtToken.connect(user1).approve(staking.address, additionalReward);
+            await token.mint(user1.address, additionalReward);
+            await token.connect(user1).approve(staking.address, additionalReward);
 
             await expect(staking.connect(user1).addRewardTokens(additionalReward)).to.be.rejectedWith(
                 'OwnableUnauthorizedAccount',
