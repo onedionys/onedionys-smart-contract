@@ -32,18 +32,23 @@ describe('Quiz Contract', function () {
     describe('Join Quiz', function () {
         it('Should allow users to join the quiz with sufficient tokens', async function () {
             const joinAmount = ethers.utils.parseEther('15');
+            const ownerShare = ethers.utils.parseEther('5');
+            const contractShare = ethers.utils.parseEther('10');
 
             const userInitialBalance = await odtToken.balanceOf(user1.address);
+            const ownerInitialBalance = await odtToken.balanceOf(owner.address);
             const contractInitialBalance = await odtToken.balanceOf(quiz.address);
 
             await odtToken.connect(user1).approve(quiz.address, joinAmount);
             await quiz.connect(user1).joinQuiz();
 
             const userFinalBalance = await odtToken.balanceOf(user1.address);
+            const ownerFinalBalance = await odtToken.balanceOf(owner.address);
             const contractFinalBalance = await odtToken.balanceOf(quiz.address);
 
             expect(userFinalBalance.toString()).to.equal(userInitialBalance.sub(joinAmount).toString());
-            expect(contractFinalBalance.toString()).to.equal(contractInitialBalance.add(joinAmount).toString());
+            expect(contractFinalBalance.toString()).to.equal(contractInitialBalance.add(contractShare).toString());
+            expect(ownerFinalBalance.toString()).to.equal(ownerInitialBalance.add(ownerShare).toString());
         });
     });
 
