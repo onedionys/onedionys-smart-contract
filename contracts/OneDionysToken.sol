@@ -28,15 +28,12 @@ contract OneDionysToken is ERC20, Ownable {
             'You can only claim once every 24 hours'
         );
 
-        _mint(msg.sender, faucetAmount);
+        address owner = owner();
+        require(balanceOf(owner) >= faucetAmount, 'Owner has insufficient tokens');
+
+        _transfer(owner, msg.sender, faucetAmount);
 
         totalFaucetDistributed += faucetAmount;
-
-        address owner = owner();
-        uint256 burnAmount = faucetAmount * 2;
-        require(balanceOf(owner) >= burnAmount, 'Owner has insufficient tokens to burn');
-        _burn(owner, burnAmount);
-
         lastClaimTime[msg.sender] = block.timestamp;
     }
 
