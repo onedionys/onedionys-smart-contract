@@ -5,7 +5,7 @@ import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 
 contract Staking is Ownable {
-    IERC20 public odtToken;
+    IERC20 public token;
 
     uint256 public totalRewardPool;
     uint256 public rewardPerSecond = 0.00001 * 10 ** 18;
@@ -19,18 +19,18 @@ contract Staking is Ownable {
     event RewardTokensAdded(uint256 amount);
     event RewardPerSecondUpdated(uint256 newRewardPerSecond);
 
-    constructor(address _odtToken) Ownable(msg.sender) {
-        odtToken = IERC20(_odtToken);
+    constructor(address _token) Ownable(msg.sender) {
+        token = IERC20(_token);
     }
 
     function stake(uint256 amount) external {
         require(amount > 0, 'Amount should be greater than 0');
-        require(odtToken.balanceOf(msg.sender) >= amount, 'Insufficient balance for staking');
+        require(token.balanceOf(msg.sender) >= amount, 'Insufficient balance for staking');
 
-        uint256 allowance = odtToken.allowance(msg.sender, address(this));
+        uint256 allowance = token.allowance(msg.sender, address(this));
         require(allowance >= amount, 'Allowance not sufficient for staking');
 
-        odtToken.transferFrom(msg.sender, address(this), amount);
+        token.transferFrom(msg.sender, address(this), amount);
 
         if (stakedAmounts[msg.sender] > 0) {
             _claimRewards(msg.sender);
@@ -48,7 +48,7 @@ contract Staking is Ownable {
         stakedAmounts[msg.sender] -= amount;
         _claimRewards(msg.sender);
 
-        odtToken.transfer(msg.sender, amount);
+        token.transfer(msg.sender, amount);
 
         if (stakedAmounts[msg.sender] == 0) {
             stakingTimestamp[msg.sender] = 0;
@@ -70,7 +70,7 @@ contract Staking is Ownable {
         require(totalRewardPool >= reward, 'Not enough tokens in contract for rewards');
 
         totalRewardPool -= reward;
-        odtToken.transfer(user, reward);
+        token.transfer(user, reward);
         stakingTimestamp[user] = block.timestamp;
 
         emit RewardsClaimed(user, reward);
@@ -79,10 +79,10 @@ contract Staking is Ownable {
     function addRewardTokens(uint256 amount) external onlyOwner {
         require(amount > 0, 'Amount should be greater than 0');
 
-        uint256 allowance = odtToken.allowance(msg.sender, address(this));
+        uint256 allowance = token.allowance(msg.sender, address(this));
         require(allowance >= amount, 'Allowance not sufficient to add reward tokens');
 
-        odtToken.transferFrom(msg.sender, address(this), amount);
+        token.transferFrom(msg.sender, address(this), amount);
         totalRewardPool += amount;
 
         emit RewardTokensAdded(amount);
