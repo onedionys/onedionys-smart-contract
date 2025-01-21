@@ -12,7 +12,7 @@ async function main() {
 
     // Deploy Staking contract
     const Staking = await hre.ethers.getContractFactory('Staking');
-    const staking = await Staking.deploy(oneDionysToken.address, deployer.address); // Use ODT token as reward
+    const staking = await Staking.deploy(oneDionysToken.address); // Use ODT token as reward
     console.log('Staking contract deployed to:', staking.address);
 
     // Deploy Quiz contract
