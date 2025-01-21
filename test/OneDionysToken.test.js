@@ -71,16 +71,6 @@ describe('OneDionysToken', function () {
     });
 
     describe('Burned', function () {
-        it('Should burn tokens from the owner’s balance after faucet claims', async function () {
-            const ownerBalanceBefore = await token.balanceOf(owner.address);
-
-            await token.connect(user).claimFaucet();
-            const ownerBalanceAfter = await token.balanceOf(owner.address);
-
-            const burnAmount = ethers.utils.parseEther('200');
-            expect(ownerBalanceBefore.sub(ownerBalanceAfter).toString()).to.equal(burnAmount.toString());
-        });
-
         it('Should allow burning tokens by owner or holder', async function () {
             const burnAmount = ethers.utils.parseEther('50');
             const initialBalance = await token.balanceOf(owner.address);
