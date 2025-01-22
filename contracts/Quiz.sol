@@ -9,9 +9,13 @@ contract Quiz is Ownable {
 
     uint256 public totalRewardPool;
     uint256 public maxReward = 10 * 3 * 10 ** 18;
+    uint256 public timePerQuestion = 30;
+    uint256 public totalQuestions = 10;
 
     mapping(address => uint256) public userPoints;
     mapping(address => bool) public isParticipant;
+    mapping(address => uint256) public questionStartTime;
+    mapping(address => uint256) public currentQuestionIndex;
 
     event QuizJoined(address indexed user, uint256 amount);
     event AnswerSubmitted(address indexed user, bool isCorrect);
@@ -36,17 +40,30 @@ contract Quiz is Ownable {
 
         token.transferFrom(msg.sender, address(this), contractShare);
 
+        if (userPoints[msg.sender] > 0) {
+            _claimRewards(msg.sender);
+        }
+
         isParticipant[msg.sender] = true;
+        questionStartTime[msg.sender] = block.timestamp;
+        currentQuestionIndex[msg.sender] = 0;
 
         emit QuizJoined(msg.sender, requiredAmount);
     }
 
     function submitAnswer(bool isCorrect) external {
         require(isParticipant[msg.sender], 'User not joined in quiz');
+        require(currentQuestionIndex[msg.sender] < totalQuestions, 'Quiz completed');
+
+        uint256 elapsedTime = block.timestamp - questionStartTime[msg.sender];
+        require(elapsedTime <= timePerQuestion, 'Time is up for this question');
 
         if (isCorrect) {
             userPoints[msg.sender]++;
         }
+
+        currentQuestionIndex[msg.sender]++;
+        questionStartTime[msg.sender] = block.timestamp;
 
         emit AnswerSubmitted(msg.sender, isCorrect);
     }
@@ -64,6 +81,8 @@ contract Quiz is Ownable {
 
     function claimRewards() external {
         require(userPoints[msg.sender] > 0, 'No points to claim');
+        require(isParticipant[msg.sender], 'Not a participant');
+
         _claimRewards(msg.sender);
     }
 
@@ -74,7 +93,11 @@ contract Quiz is Ownable {
 
         totalRewardPool -= reward;
         token.transfer(user, reward);
+
         userPoints[user] = 0;
+        isParticipant[user] = false;
+        currentQuestionIndex[msg.sender] = 0;
+        questionStartTime[msg.sender] = 0;
 
         emit RewardsClaimed(user, reward);
     }
