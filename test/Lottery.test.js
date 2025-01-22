@@ -33,17 +33,7 @@ describe('Lottery System', function () {
     });
 
     describe('Add Reward Tokens', function () {
-        it('Should allow user to join the lottery', async function () {
-            await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('10'));
-            await expect(lottery.connect(user1).joinLottery())
-                .to.emit(lottery, 'JoinedLottery')
-                .withArgs(user1.address, ethers.utils.parseEther('10'));
-        });
-
         it('Should allow user to spin the wheel and mint an NFT', async function () {
-            await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('10'));
-            await lottery.connect(user1).joinLottery();
-
             await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('10'));
             const spinResult = await lottery.connect(user1).spinWheel();
             expect(spinResult).to.emit(lottery, 'SpinWheel');
@@ -58,7 +48,6 @@ describe('Lottery System', function () {
 
         it('Should update user points after spinning the wheel', async function () {
             await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('20'));
-            await lottery.connect(user1).joinLottery();
             await lottery.connect(user1).spinWheel();
 
             const points = await lottery.userPoints(user1.address);
@@ -69,7 +58,6 @@ describe('Lottery System', function () {
     describe('Add Reward Tokenss', function () {
         it('Should update leaderboard correctly', async function () {
             await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('20'));
-            await lottery.connect(user1).joinLottery();
             await lottery.connect(user1).spinWheel();
 
             const leaderboard = await lottery.getLeaderboard();
@@ -78,7 +66,6 @@ describe('Lottery System', function () {
 
         it('Should enforce cooldown on spinning the wheel', async function () {
             await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('20'));
-            await lottery.connect(user1).joinLottery();
             await lottery.connect(user1).spinWheel();
 
             await expect(lottery.connect(user1).spinWheel()).to.be.revertedWith('Spin cooldown active');
@@ -86,7 +73,7 @@ describe('Lottery System', function () {
 
         it('Owner can withdraw tokens from Lottery contract', async function () {
             await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('10'));
-            await lottery.connect(user1).joinLottery();
+            await lottery.connect(user1).spinWheel();
 
             const initialBalance = await token.balanceOf(owner.address);
 
