@@ -33,7 +33,6 @@ contract NFTCollection is ERC721URIStorage, Ownable {
         _safeMint(to, tokenId);
         nftDetails[tokenId] = NFTDetails(rarity, points);
 
-        // Menentukan CID yang sesuai dengan rarity
         string memory metadataCID;
         if (keccak256(abi.encodePacked(rarity)) == keccak256(abi.encodePacked('Common'))) {
             metadataCID = 'bafkreifph4d7ekx6iapuc6jjilbzzxwtv4e722x5wegrgynem2drqjmgxq';
@@ -45,7 +44,6 @@ contract NFTCollection is ERC721URIStorage, Ownable {
             metadataCID = 'bafkreib5lvtpafojuzozawae3o4bqvbhs76utylitjvtnfgpshxh6sx2oq';
         }
 
-        // Menyusun URL metadata JSON untuk token yang dimint
         _setTokenURI(tokenId, string(abi.encodePacked('https://ipfs.io/ipfs/', metadataCID)));
 
         nextTokenId++;
