@@ -6,7 +6,11 @@ import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 
 interface INFTCollection {
-    function mint(address to, string memory rarity, uint256 points) external;
+    function mint(address to, string memory rarity, uint256 points) external returns (uint256);
+    function burn(uint256 tokenId) external;
+    function getNFTDetails(
+        uint256 tokenId
+    ) external view returns (string memory rarity, uint256 points, string memory cid);
 }
 
 contract Lottery is Ownable {
@@ -22,8 +26,9 @@ contract Lottery is Ownable {
     address[] public leaderboard;
     mapping(address => bool) public isInLeaderboard;
 
-    event SpinWheel(address indexed user, string rarity, uint256 points);
+    event SpinWheel(address indexed user, string rarity, uint256 points, string cid);
     event LeaderboardUpdated(address indexed user, uint256 points);
+    event Withdraw(address indexed user, uint256 points);
 
     constructor(address _token, address _nftCollection) Ownable(msg.sender) {
         token = IERC20(_token);
@@ -53,14 +58,16 @@ contract Lottery is Ownable {
             points = 100;
         }
 
-        nftCollection.mint(msg.sender, rarity, points);
+        uint256 tokenId = nftCollection.mint(msg.sender, rarity, points);
 
         userPoints[msg.sender] += points;
         lastSpinTime[msg.sender] = block.timestamp;
 
         _updateLeaderboard(msg.sender);
 
-        emit SpinWheel(msg.sender, rarity, points);
+        (, , string memory cid) = nftCollection.getNFTDetails(tokenId);
+
+        emit SpinWheel(msg.sender, rarity, points, cid);
     }
 
     function _updateLeaderboard(address user) internal {
@@ -85,9 +92,34 @@ contract Lottery is Ownable {
         return (leaders, points);
     }
 
-    function withdrawTokens() external onlyOwner {
-        uint256 balance = token.balanceOf(address(this));
-        require(balance > 0, 'No tokens to withdraw');
-        require(token.transfer(msg.sender, balance), 'Withdrawal failed');
+    function withdrawTokens() external {
+        uint256 points = userPoints[msg.sender];
+        require(points > 0, 'No points to withdraw');
+
+        require(token.transfer(msg.sender, points), 'Transfer failed');
+
+        userPoints[msg.sender] = 0;
+        lastSpinTime[msg.sender] = 0;
+        isInLeaderboard[msg.sender] = false;
+
+        for (uint256 i = 0; i < leaderboard.length; i++) {
+            if (leaderboard[i] == msg.sender) {
+                leaderboard[i] = leaderboard[leaderboard.length - 1];
+                leaderboard.pop();
+                break;
+            }
+        }
+
+        emit Withdraw(msg.sender, points);
+    }
+
+    function burnNft(uint256 tokenId) external {
+        (, uint256 points, ) = nftCollection.getNFTDetails(tokenId);
+        require(points > 0, 'Invalid NFT points');
+
+        require(token.transfer(msg.sender, points), 'Transfer failed');
+        nftCollection.burn(tokenId);
+
+        emit Withdraw(msg.sender, points);
     }
 }
