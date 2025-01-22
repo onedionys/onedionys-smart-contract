@@ -33,7 +33,20 @@ contract NFTCollection is ERC721URIStorage, Ownable {
         _safeMint(to, tokenId);
         nftDetails[tokenId] = NFTDetails(rarity, points);
 
-        _setTokenURI(tokenId, string(abi.encodePacked('https://ipfs.io/ipfs/your_hash_', uint2str(tokenId), '.json')));
+        // Menentukan CID yang sesuai dengan rarity
+        string memory metadataCID;
+        if (keccak256(abi.encodePacked(rarity)) == keccak256(abi.encodePacked('Common'))) {
+            metadataCID = 'bafkreifph4d7ekx6iapuc6jjilbzzxwtv4e722x5wegrgynem2drqjmgxq';
+        } else if (keccak256(abi.encodePacked(rarity)) == keccak256(abi.encodePacked('Rare'))) {
+            metadataCID = 'bafkreih2cmazhjjb64ezclpszqkmq7penj5pukle45qq6mbgiszt7isoua';
+        } else if (keccak256(abi.encodePacked(rarity)) == keccak256(abi.encodePacked('Epic'))) {
+            metadataCID = 'bafkreib6p7sv23uigc3trcqvkffhrh73x7b3xzs5i35ofnaysrz53pdpzm';
+        } else if (keccak256(abi.encodePacked(rarity)) == keccak256(abi.encodePacked('Legendary'))) {
+            metadataCID = 'bafkreib5lvtpafojuzozawae3o4bqvbhs76utylitjvtnfgpshxh6sx2oq';
+        }
+
+        // Menyusun URL metadata JSON untuk token yang dimint
+        _setTokenURI(tokenId, string(abi.encodePacked('https://ipfs.io/ipfs/', metadataCID)));
 
         nextTokenId++;
 
