@@ -45,8 +45,8 @@ contract Staking is Ownable {
     function unstake(uint256 amount) external {
         require(stakedAmounts[msg.sender] >= amount, 'Not enough staked');
 
-        stakedAmounts[msg.sender] -= amount;
         _claimRewards(msg.sender);
+        stakedAmounts[msg.sender] -= amount;
 
         token.transfer(msg.sender, amount);
 
