@@ -70,7 +70,7 @@ describe('Quiz Contract', function () {
 
             await token.connect(user1).approve(quiz.address, joinAmount);
             await quiz.connect(user1).joinQuiz();
-            
+
             await quiz.connect(user1).submitAnswer(false);
 
             const points = await quiz.userPoints(user1.address);
