@@ -22,18 +22,12 @@ contract Lottery is Ownable {
     address[] public leaderboard;
     mapping(address => bool) public isInLeaderboard;
 
-    event JoinedLottery(address indexed user, uint256 amount);
     event SpinWheel(address indexed user, string rarity, uint256 points);
     event LeaderboardUpdated(address indexed user, uint256 points);
 
     constructor(address _token, address _nftCollection) Ownable(msg.sender) {
         token = IERC20(_token);
         nftCollection = INFTCollection(_nftCollection);
-    }
-
-    function joinLottery() external {
-        require(token.transferFrom(msg.sender, address(this), ticketPrice), 'Insufficient tokens');
-        emit JoinedLottery(msg.sender, ticketPrice);
     }
 
     function spinWheel() external {
