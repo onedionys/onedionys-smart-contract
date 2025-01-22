@@ -13,9 +13,10 @@ contract NFTCollection is ERC721URIStorage, Ownable {
     struct NFTDetails {
         string rarity;
         uint256 points;
+        string cid;
     }
 
-    event NFTMinted(address indexed to, uint256 tokenId, string rarity, uint256 points);
+    event NFTMinted(address indexed to, uint256 tokenId, string rarity, uint256 points, string cid);
 
     constructor() ERC721('DionysNFT', 'DNFT') Ownable(msg.sender) {}
 
@@ -28,10 +29,10 @@ contract NFTCollection is ERC721URIStorage, Ownable {
         lotteryContract = _lotteryContract;
     }
 
-    function mint(address to, string memory rarity, uint256 points) external onlyLotteryContract {
+    function mint(address to, string memory rarity, uint256 points) external onlyLotteryContract returns (uint256) {
         uint256 tokenId = nextTokenId;
+
         _safeMint(to, tokenId);
-        nftDetails[tokenId] = NFTDetails(rarity, points);
 
         string memory metadataCID;
         if (keccak256(abi.encodePacked(rarity)) == keccak256(abi.encodePacked('Common'))) {
@@ -44,16 +45,24 @@ contract NFTCollection is ERC721URIStorage, Ownable {
             metadataCID = 'bafkreib5lvtpafojuzozawae3o4bqvbhs76utylitjvtnfgpshxh6sx2oq';
         }
 
+        nftDetails[tokenId] = NFTDetails(rarity, points, metadataCID);
         _setTokenURI(tokenId, string(abi.encodePacked('https://ipfs.io/ipfs/', metadataCID)));
 
         nextTokenId++;
 
-        emit NFTMinted(to, tokenId, rarity, points);
+        emit NFTMinted(to, tokenId, rarity, points, metadataCID);
+
+        return tokenId;
     }
 
-    function getNFTDetails(uint256 tokenId) external view returns (string memory, uint256) {
+    function burn(uint256 tokenId) external onlyLotteryContract {
+        _burn(tokenId);
+        delete nftDetails[tokenId];
+    }
+
+    function getNFTDetails(uint256 tokenId) external view returns (string memory, uint256, string memory) {
         NFTDetails memory details = nftDetails[tokenId];
-        return (details.rarity, details.points);
+        return (details.rarity, details.points, details.cid);
     }
 
     function uint2str(uint256 _i) internal pure returns (string memory _uintAsString) {
