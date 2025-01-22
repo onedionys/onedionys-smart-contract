@@ -89,7 +89,7 @@ describe('Quiz Contract', function () {
             await quiz.connect(user1).submitAnswer(true);
 
             const expectedReward = await quiz.calculateReward(user1.address);
-            expect(expectedReward.toString()).to.equal(ethers.utils.parseEther('6').toString()); // 2 points * 3 * 10^18
+            expect(expectedReward.toString()).to.equal(ethers.utils.parseEther('6').toString());
 
             await quiz.connect(user1).claimRewards();
 
