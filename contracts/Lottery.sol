@@ -23,6 +23,7 @@ contract Lottery is Ownable {
 
     uint256 public ticketPrice = 10 * 10 ** 18;
     uint256 public spinCooldown = 5 minutes;
+    uint256 public totalRewardPool;
 
     struct LeaderboardEntry {
         address user;
@@ -34,6 +35,7 @@ contract Lottery is Ownable {
     event SpinWheel(address indexed user, string rarity, uint256 points, string cid);
     event LeaderboardUpdated(address indexed user, uint256 points);
     event Withdraw(address indexed user, uint256 points);
+    event RewardTokensAdded(uint256 amount);
 
     constructor(address _token, address _nftCollection) Ownable(msg.sender) {
         token = IERC20(_token);
@@ -133,8 +135,10 @@ contract Lottery is Ownable {
     function withdrawTokens() external {
         uint256 points = userPoints[msg.sender];
         require(points > 0, 'No points to withdraw');
+        require(totalRewardPool >= points, 'Not enough tokens in contract for rewards');
         require(token.transfer(msg.sender, points), 'Transfer failed');
 
+        totalRewardPool -= points;
         userPoints[msg.sender] = 0;
         lastSpinTime[msg.sender] = 0;
 
@@ -168,5 +172,17 @@ contract Lottery is Ownable {
         nftCollection.burn(tokenId);
 
         emit Withdraw(msg.sender, points);
+    }
+
+    function addRewardTokens(uint256 amount) external onlyOwner {
+        require(amount > 0, 'Amount should be greater than 0');
+
+        uint256 allowance = token.allowance(msg.sender, address(this));
+        require(allowance >= amount, 'Allowance not sufficient to add reward tokens');
+
+        token.transferFrom(msg.sender, address(this), amount);
+        totalRewardPool += amount;
+
+        emit RewardTokensAdded(amount);
     }
 }
