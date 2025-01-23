@@ -30,6 +30,11 @@ describe('Lottery Contract', function () {
 
         await token.connect(owner).mint(user1.address, ethers.utils.parseEther('100'));
         await token.connect(owner).mint(user2.address, ethers.utils.parseEther('100'));
+
+        const rewardAmount = ethers.utils.parseEther('500');
+        await token.mint(owner.address, rewardAmount);
+        await token.approve(lottery.address, rewardAmount);
+        await lottery.addRewardTokens(rewardAmount);
     });
 
     describe('Spin Wheel', function () {
