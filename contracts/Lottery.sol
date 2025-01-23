@@ -118,8 +118,16 @@ contract Lottery is Ownable {
         }
     }
 
-    function getLeaderboard() external view returns (LeaderboardEntry[] memory) {
-        return leaderboard;
+    function getLeaderboard() external view returns (address[] memory, uint256[] memory) {
+        address[] memory users = new address[](leaderboard.length);
+        uint256[] memory points = new uint256[](leaderboard.length);
+
+        for (uint256 i = 0; i < leaderboard.length; i++) {
+            users[i] = leaderboard[i].user;
+            points[i] = leaderboard[i].points;
+        }
+
+        return (users, points);
     }
 
     function withdrawTokens() external {
