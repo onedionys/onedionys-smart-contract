@@ -136,7 +136,9 @@ contract Lottery is Ownable {
         uint256 points = userPoints[msg.sender];
         require(points > 0, 'No points to withdraw');
         require(totalRewardPool >= points, 'Not enough tokens in contract for rewards');
-        require(token.transfer(msg.sender, points), 'Transfer failed');
+
+        uint256 transferAmount = points * (10 ** 18);
+        require(token.transfer(msg.sender, transferAmount), 'Transfer failed');
 
         totalRewardPool -= points;
         userPoints[msg.sender] = 0;
@@ -167,8 +169,18 @@ contract Lottery is Ownable {
     function burnNft(uint256 tokenId) external {
         (, uint256 points, ) = nftCollection.getNFTDetails(tokenId);
         require(points > 0, 'Invalid NFT points');
+        require(totalRewardPool >= points, 'Not enough tokens in contract for rewards');
 
-        require(token.transfer(msg.sender, points), 'Transfer failed');
+        uint256 transferAmount = points * (10 ** 18);
+        require(token.transfer(msg.sender, transferAmount), 'Transfer failed');
+
+        totalRewardPool -= points;
+        userPoints[msg.sender] -= points;
+
+        if (userPoints[msg.sender] == 0) {
+            _removeFromLeaderboard(msg.sender);
+        }
+
         nftCollection.burn(tokenId);
 
         emit Withdraw(msg.sender, points);
