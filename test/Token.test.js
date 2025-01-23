@@ -5,7 +5,7 @@ import chaiAsPromised from 'chai-as-promised';
 
 use(chaiAsPromised);
 
-describe('Token', function () {
+describe('Token Contract', function () {
     let token;
     let owner;
     let user;
