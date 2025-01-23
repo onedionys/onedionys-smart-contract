@@ -8,7 +8,7 @@ import { BigNumber } from 'ethers';
 use(solidity);
 use(chaiAsPromised);
 
-describe('Lottery System', function () {
+describe('Lottery Contract', function () {
     let Token, token, NFTCollection, nftCollection, Lottery, lottery;
     let owner, user1, user2;
 
@@ -32,7 +32,7 @@ describe('Lottery System', function () {
         await token.connect(owner).mint(user2.address, ethers.utils.parseEther('100'));
     });
 
-    describe('Add Reward Tokens', function () {
+    describe('Spin Wheel', function () {
         it('Should allow user to spin the wheel and mint an NFT', async function () {
             await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('10'));
             const spinResult = await lottery.connect(user1).spinWheel();
@@ -42,8 +42,10 @@ describe('Lottery System', function () {
             expect(balance).to.equal(1);
 
             const nftDetails = await nftCollection.getNFTDetails(0);
-            expect(['Common', 'Rare', 'Epic', 'Legendary']).to.include(nftDetails[0]);
-            expect(nftDetails[1].toNumber()).to.be.oneOf([10, 25, 50, 100]);
+            expect(['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythic', 'Godlike', 'Unique']).to.include(
+                nftDetails[0],
+            );
+            expect(nftDetails[1].toNumber()).to.be.oneOf([10, 25, 50, 75, 100, 200, 300, 500]);
         });
 
         it('Should update user points after spinning the wheel', async function () {
@@ -53,16 +55,6 @@ describe('Lottery System', function () {
             const points = await lottery.userPoints(user1.address);
             expect(points.toNumber()).to.be.greaterThan(0);
         });
-    });
-
-    describe('Add Reward Tokenss', function () {
-        it('Should update leaderboard correctly', async function () {
-            await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('20'));
-            await lottery.connect(user1).spinWheel();
-
-            const leaderboard = await lottery.getLeaderboard();
-            expect(leaderboard[0]).to.include(user1.address);
-        });
 
         it('Should enforce cooldown on spinning the wheel', async function () {
             await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('20'));
@@ -71,16 +63,100 @@ describe('Lottery System', function () {
             await expect(lottery.connect(user1).spinWheel()).to.be.revertedWith('Spin cooldown active');
         });
 
+        it('Should not allow spinning the wheel before cooldown', async function () {
+            await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('10'));
+            await lottery.connect(user1).spinWheel();
+
+            await expect(lottery.connect(user1).spinWheel()).to.be.revertedWith('Spin cooldown active');
+        });
+    });
+
+    describe('Show Leaderboard', function () {
+        it('Should add user to leaderboard after spinning', async function () {
+            await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('10'));
+            await lottery.connect(user1).spinWheel();
+
+            const leaderboard = await lottery.getLeaderboard();
+            expect(leaderboard[0].user).to.equal(user1.address);
+            expect(leaderboard[0].points.toNumber()).to.be.greaterThan(0);
+        });
+
+        it('Should update leaderboard correctly', async function () {
+            await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('20'));
+            await lottery.connect(user1).spinWheel();
+
+            const leaderboard = await lottery.getLeaderboard();
+            expect(leaderboard[0]).to.include(user1.address);
+        });
+
+        it('Should update leaderboard when withdrawing points', async function () {
+            await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('10'));
+            await lottery.connect(user1).spinWheel();
+
+            const leaderboardBefore = await lottery.getLeaderboard();
+            await lottery.connect(user1).withdrawTokens();
+
+            const leaderboardAfter = await lottery.getLeaderboard();
+            expect(leaderboardBefore.length).to.be.greaterThan(leaderboardAfter.length);
+        });
+    });
+
+    describe('Withdraw Token', function () {
         it('Owner can withdraw tokens from Lottery contract', async function () {
             await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('10'));
             await lottery.connect(user1).spinWheel();
 
-            const initialBalance = await token.balanceOf(owner.address);
+            const initialBalance = await token.balanceOf(user1.address);
 
-            await lottery.connect(owner).withdrawTokens();
-            const finalBalance = await token.balanceOf(owner.address);
+            await lottery.connect(user1).withdrawTokens();
+            const finalBalance = await token.balanceOf(user1.address);
 
             expect(BigNumber.from(finalBalance).gt(BigNumber.from(initialBalance))).to.be.true;
+        });
+
+        it('Should allow withdrawal of points and burn NFTs', async function () {
+            await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('20'));
+            await lottery.connect(user1).spinWheel();
+
+            const initialBalance = await token.balanceOf(user1.address);
+            const points = await lottery.userPoints(user1.address);
+            await lottery.connect(user1).withdrawTokens();
+
+            const finalBalance = await token.balanceOf(user1.address);
+
+            expect(finalBalance.sub(initialBalance)).to.equal(points);
+        });
+
+        it('Should allow burning NFTs for points', async function () {
+            await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('10'));
+            await lottery.connect(user1).spinWheel();
+
+            const userTokens = await nftCollection.getUserTokens(user1.address);
+            const tokenId = userTokens[0];
+
+            const nftDetails = await nftCollection.getNFTDetails(tokenId);
+            const points = nftDetails[1];
+
+            const initialBalance = await token.balanceOf(user1.address);
+
+            await lottery.connect(user1).burnNft(tokenId);
+
+            const finalBalance = await token.balanceOf(user1.address);
+
+            expect(finalBalance.sub(initialBalance)).to.equal(points);
+        });
+
+        it('Should allow user to withdraw tokens after spinning the wheel', async function () {
+            await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('20'));
+            await lottery.connect(user1).spinWheel();
+
+            const pointsBefore = await lottery.userPoints(user1.address);
+
+            await lottery.connect(user1).withdrawTokens();
+
+            const pointsAfter = await lottery.userPoints(user1.address);
+            expect(pointsBefore.toNumber()).to.be.greaterThan(0);
+            expect(pointsAfter.toNumber()).to.equal(0);
         });
     });
 });
