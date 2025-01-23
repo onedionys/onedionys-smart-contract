@@ -77,8 +77,9 @@ describe('Lottery Contract', function () {
             await lottery.connect(user1).spinWheel();
 
             const leaderboard = await lottery.getLeaderboard();
-            expect(leaderboard[0].user).to.equal(user1.address);
-            expect(leaderboard[0].points.toNumber()).to.be.greaterThan(0);
+            const firstEntry = leaderboard;
+            expect(firstEntry[0][0]).to.equal(user1.address);
+            expect(Number(firstEntry[1][0])).to.be.greaterThan(0);
         });
 
         it('Should update leaderboard correctly', async function () {
@@ -93,11 +94,14 @@ describe('Lottery Contract', function () {
             await token.connect(user1).approve(lottery.address, ethers.utils.parseEther('10'));
             await lottery.connect(user1).spinWheel();
 
+            await token.connect(user2).approve(lottery.address, ethers.utils.parseEther('10'));
+            await lottery.connect(user2).spinWheel();
+
             const leaderboardBefore = await lottery.getLeaderboard();
             await lottery.connect(user1).withdrawTokens();
 
             const leaderboardAfter = await lottery.getLeaderboard();
-            expect(leaderboardBefore.length).to.be.greaterThan(leaderboardAfter.length);
+            expect(leaderboardBefore[0].length).to.be.greaterThan(leaderboardAfter[0].length);
         });
     });
 
