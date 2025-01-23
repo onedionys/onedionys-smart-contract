@@ -56,8 +56,8 @@ ignition/deployments/chain-31337
 # Test Automated Script
 src/interact.js
 src/mintBurn.js
-wallets.json
-wow.js
+src/wow.js
 src/newInteraction.js
 contracts/backup/
 test/backup/
+wallets.json
