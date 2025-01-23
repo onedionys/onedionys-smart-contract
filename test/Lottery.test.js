@@ -129,11 +129,14 @@ describe('Lottery Contract', function () {
 
             const initialBalance = await token.balanceOf(user1.address);
             const points = await lottery.userPoints(user1.address);
+
+            const pointsInWei = ethers.utils.parseEther(points.toString());
+
             await lottery.connect(user1).withdrawTokens();
 
             const finalBalance = await token.balanceOf(user1.address);
 
-            expect(finalBalance.sub(initialBalance)).to.equal(points);
+            expect(finalBalance.sub(initialBalance)).to.equal(pointsInWei);
         });
 
         it('Should allow burning NFTs for points', async function () {
@@ -146,13 +149,15 @@ describe('Lottery Contract', function () {
             const nftDetails = await nftCollection.getNFTDetails(tokenId);
             const points = nftDetails[1];
 
+            const pointsInWei = ethers.utils.parseEther(points.toString());
+
             const initialBalance = await token.balanceOf(user1.address);
 
             await lottery.connect(user1).burnNft(tokenId);
 
             const finalBalance = await token.balanceOf(user1.address);
 
-            expect(finalBalance.sub(initialBalance)).to.equal(points);
+            expect(finalBalance.sub(initialBalance)).to.equal(pointsInWei);
         });
 
         it('Should allow user to withdraw tokens after spinning the wheel', async function () {
