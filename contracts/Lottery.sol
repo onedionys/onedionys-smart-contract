@@ -11,6 +11,7 @@ interface INFTCollection {
     function getNFTDetails(
         uint256 tokenId
     ) external view returns (string memory rarity, uint256 points, string memory cid);
+    function getUserTokens(address user) external view returns (uint256[] memory);
 }
 
 contract Lottery is Ownable {
@@ -23,8 +24,12 @@ contract Lottery is Ownable {
     uint256 public ticketPrice = 10 * 10 ** 18;
     uint256 public spinCooldown = 5 minutes;
 
-    address[] public leaderboard;
-    mapping(address => bool) public isInLeaderboard;
+    struct LeaderboardEntry {
+        address user;
+        uint256 points;
+    }
+
+    LeaderboardEntry[] public leaderboard;
 
     event SpinWheel(address indexed user, string rarity, uint256 points, string cid);
     event LeaderboardUpdated(address indexed user, uint256 points);
@@ -47,15 +52,27 @@ contract Lottery is Ownable {
         if (random < 50) {
             rarity = 'Common';
             points = 10;
-        } else if (random < 80) {
-            rarity = 'Rare';
+        } else if (random < 75) {
+            rarity = 'Uncommon';
             points = 25;
-        } else if (random < 95) {
-            rarity = 'Epic';
+        } else if (random < 85) {
+            rarity = 'Rare';
             points = 50;
-        } else {
+        } else if (random < 90) {
+            rarity = 'Epic';
+            points = 75;
+        } else if (random < 97) {
             rarity = 'Legendary';
             points = 100;
+        } else if (random < 99) {
+            rarity = 'Mythic';
+            points = 200;
+        } else if (random < 100) {
+            rarity = 'Godlike';
+            points = 300;
+        } else {
+            rarity = 'Unique';
+            points = 500;
         }
 
         uint256 tokenId = nftCollection.mint(msg.sender, rarity, points);
@@ -71,46 +88,68 @@ contract Lottery is Ownable {
     }
 
     function _updateLeaderboard(address user) internal {
-        if (!isInLeaderboard[user]) {
-            leaderboard.push(user);
-            isInLeaderboard[user] = true;
+        bool found = false;
+
+        for (uint256 i = 0; i < leaderboard.length; i++) {
+            if (leaderboard[i].user == user) {
+                leaderboard[i].points = userPoints[user];
+                found = true;
+                break;
+            }
         }
 
+        if (!found) {
+            leaderboard.push(LeaderboardEntry(user, userPoints[user]));
+        }
+
+        _sortLeaderboard();
         emit LeaderboardUpdated(user, userPoints[user]);
     }
 
-    function getLeaderboard() external view returns (address[] memory, uint256[] memory) {
-        uint256 length = leaderboard.length;
-        address[] memory leaders = new address[](length);
-        uint256[] memory points = new uint256[](length);
-
-        for (uint256 i = 0; i < length; i++) {
-            leaders[i] = leaderboard[i];
-            points[i] = userPoints[leaders[i]];
+    function _sortLeaderboard() internal {
+        for (uint256 i = 0; i < leaderboard.length; i++) {
+            for (uint256 j = i + 1; j < leaderboard.length; j++) {
+                if (leaderboard[j].points > leaderboard[i].points) {
+                    LeaderboardEntry memory temp = leaderboard[i];
+                    leaderboard[i] = leaderboard[j];
+                    leaderboard[j] = temp;
+                }
+            }
         }
+    }
 
-        return (leaders, points);
+    function getLeaderboard() external view returns (LeaderboardEntry[] memory) {
+        return leaderboard;
     }
 
     function withdrawTokens() external {
         uint256 points = userPoints[msg.sender];
         require(points > 0, 'No points to withdraw');
-
         require(token.transfer(msg.sender, points), 'Transfer failed');
 
         userPoints[msg.sender] = 0;
         lastSpinTime[msg.sender] = 0;
-        isInLeaderboard[msg.sender] = false;
 
+        _removeFromLeaderboard(msg.sender);
+
+        uint256[] memory userTokens = nftCollection.getUserTokens(msg.sender);
+        for (uint256 i = 0; i < userTokens.length; i++) {
+            nftCollection.burn(userTokens[i]);
+        }
+
+        emit Withdraw(msg.sender, points);
+    }
+
+    function _removeFromLeaderboard(address user) internal {
         for (uint256 i = 0; i < leaderboard.length; i++) {
-            if (leaderboard[i] == msg.sender) {
+            if (leaderboard[i].user == user) {
                 leaderboard[i] = leaderboard[leaderboard.length - 1];
                 leaderboard.pop();
                 break;
             }
         }
 
-        emit Withdraw(msg.sender, points);
+        _sortLeaderboard();
     }
 
     function burnNft(uint256 tokenId) external {
