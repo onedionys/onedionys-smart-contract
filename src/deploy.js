@@ -24,6 +24,10 @@ async function main() {
     const Lottery = await hre.ethers.getContractFactory('Lottery');
     const lottery = await Lottery.deploy(token.address, nftCollection.address);
     console.log('Lottery contract deployed to:', lottery.address);
+
+    const Native = await hre.ethers.getContractFactory('Native');
+    const native = await Native.deploy();
+    console.log('Native contract deployed to:', native.address);
 }
 
 main()
