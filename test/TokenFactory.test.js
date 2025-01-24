@@ -6,22 +6,30 @@ import chaiAsPromised from 'chai-as-promised';
 use(chaiAsPromised);
 
 describe('Token Creator Contract', function () {
-    let tokenFactory;
+    let tokenFactory, teaToken;
     let owner, user;
 
     beforeEach(async function () {
         [owner, user] = await ethers.getSigners();
 
+        const TeaToken = await ethers.getContractFactory('ERC20Token');
+        teaToken = await TeaToken.deploy('Tea Token', 'TEA', ethers.utils.parseUnits('10000', 18), owner.address);
+        await teaToken.deployed();
+
         const TokenFactory = await ethers.getContractFactory('TokenFactory');
-        tokenFactory = await TokenFactory.deploy();
+        const fee = ethers.utils.parseUnits('10', 18);
+        tokenFactory = await TokenFactory.deploy(teaToken.address, fee);
         await tokenFactory.deployed();
     });
 
     describe('Create Token', function () {
-        it('Should create a new token with specified name, symbol, and supply', async function () {
+        it('Should create a new token with specified name, symbol, and supply after paying fee', async function () {
             const name = 'Test Token';
             const symbol = 'TST';
             const totalSupply = ethers.utils.parseUnits('1000', 0);
+            const fee = ethers.utils.parseUnits('10', 18);
+
+            await teaToken.connect(owner).approve(tokenFactory.address, fee);
 
             const tx = await tokenFactory.createToken(name, symbol, totalSupply);
             const receipt = await tx.wait();
@@ -38,6 +46,16 @@ describe('Token Creator Contract', function () {
             expect(actualSupply.toString()).to.equal(adjustedTotalSupply.toString());
         });
 
+        it('Should reject token creation if fee is not paid', async function () {
+            const name = 'No Fee Token';
+            const symbol = 'NFT';
+            const totalSupply = ethers.utils.parseUnits('1000', 0);
+
+            await expect(tokenFactory.createToken(name, symbol, totalSupply)).to.be.rejectedWith(
+                'ERC20InsufficientAllowance',
+            );
+        });
+
         it('Should reject if total supply is zero', async function () {
             const name = 'Invalid Token';
             const symbol = 'INV';
@@ -49,40 +67,42 @@ describe('Token Creator Contract', function () {
         });
     });
 
-    describe('Token Interactions', function () {
-        let tokenAddress, newToken;
-
-        beforeEach(async function () {
-            const name = 'Interactive Token';
-            const symbol = 'ITK';
+    describe('Fee Management', function () {
+        it('Should allow owner to withdraw collected fees', async function () {
+            const fee = ethers.utils.parseUnits('10', 18);
+            const name = 'Test Token';
+            const symbol = 'TST';
             const totalSupply = ethers.utils.parseUnits('1000', 0);
 
-            const tx = await tokenFactory.createToken(name, symbol, totalSupply);
-            const receipt = await tx.wait();
+            await teaToken.connect(owner).approve(tokenFactory.address, fee);
+            await tokenFactory.connect(owner).createToken(name, symbol, totalSupply);
 
-            tokenAddress = receipt.events.find((e) => e.event === 'TokenCreated').args[0];
+            const initialOwnerBalance = await teaToken.balanceOf(owner.address);
+            await tokenFactory.connect(owner).withdrawFees();
+            const finalOwnerBalance = await teaToken.balanceOf(owner.address);
 
-            const ERC20Token = await ethers.getContractFactory('ERC20Token');
-            newToken = ERC20Token.attach(tokenAddress);
+            expect(finalOwnerBalance.sub(initialOwnerBalance).toString()).to.equal(fee.toString());
         });
 
-        it('Should allow token transfers between accounts', async function () {
-            const transferAmount = ethers.utils.parseUnits('100', 18);
-
-            await newToken.transfer(user.address, transferAmount);
-
-            const userBalance = await newToken.balanceOf(user.address);
-            const ownerBalance = await newToken.balanceOf(owner.address);
-
-            expect(userBalance.toString()).to.equal(transferAmount.toString());
-            expect(ownerBalance.toString()).to.equal(ethers.utils.parseUnits('900', 18).toString());
+        it('Should reject fee withdrawal by non-owner', async function () {
+            await expect(tokenFactory.connect(user).withdrawFees()).to.be.rejectedWith(
+                'Only the owner can perform this action',
+            );
         });
 
-        it('Should not allow transfers exceeding balance', async function () {
-            const transferAmount = ethers.utils.parseUnits('1100', 18);
+        it('Should allow owner to update the fee', async function () {
+            const newFee = ethers.utils.parseUnits('15', 18);
+            await tokenFactory.connect(owner).updateFee(newFee);
 
-            await expect(newToken.transfer(user.address, transferAmount)).to.be.rejectedWith(
-                'ERC20InsufficientBalance',
+            const updatedFee = await tokenFactory.fee();
+            expect(updatedFee.toString()).to.equal(newFee.toString());
+        });
+
+        it('Should reject fee updates by non-owner', async function () {
+            const newFee = ethers.utils.parseUnits('15', 18);
+
+            await expect(tokenFactory.connect(user).updateFee(newFee)).to.be.rejectedWith(
+                'Only the owner can perform this action',
             );
         });
     });
