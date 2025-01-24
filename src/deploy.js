@@ -1,8 +1,11 @@
 import hre from 'hardhat';
 import process from 'process';
+import { ethers } from 'ethers';
 
 async function main() {
     const [deployer] = await hre.ethers.getSigners();
+    const fee = ethers.utils.parseUnits('10', 18);
+
     console.log('Deploying contracts with the account:', deployer.address);
 
     const Token = await hre.ethers.getContractFactory('Token');
@@ -28,6 +31,13 @@ async function main() {
     const Native = await hre.ethers.getContractFactory('Native');
     const native = await Native.deploy();
     console.log('Native contract deployed to:', native.address);
+
+    const TokenFactory = await hre.ethers.getContractFactory('TokenFactory');
+    const tokenFactory = await TokenFactory.deploy(native.address, fee);
+    console.log('TokenFactory deployed to:', tokenFactory.address);
+
+    const owner = await tokenFactory.owner();
+    console.log('Owner of TokenFactory:', owner);
 }
 
 main()
