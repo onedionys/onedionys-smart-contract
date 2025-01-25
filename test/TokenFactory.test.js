@@ -6,19 +6,19 @@ import chaiAsPromised from 'chai-as-promised';
 use(chaiAsPromised);
 
 describe('Token Creator Contract', function () {
-    let tokenFactory, teaToken;
+    let tokenFactory, native;
     let owner, user;
 
     beforeEach(async function () {
         [owner, user] = await ethers.getSigners();
 
-        const TeaToken = await ethers.getContractFactory('ERC20Token');
-        teaToken = await TeaToken.deploy('Tea Token', 'TEA', ethers.utils.parseUnits('10000', 18), owner.address);
-        await teaToken.deployed();
+        const Native = await ethers.getContractFactory('Native');
+        native = await Native.deploy();
+        await native.deployed();
 
         const TokenFactory = await ethers.getContractFactory('TokenFactory');
         const fee = ethers.utils.parseUnits('10', 18);
-        tokenFactory = await TokenFactory.deploy(teaToken.address, fee);
+        tokenFactory = await TokenFactory.deploy(native.address, fee);
         await tokenFactory.deployed();
     });
 
@@ -27,11 +27,10 @@ describe('Token Creator Contract', function () {
             const name = 'Test Token';
             const symbol = 'TST';
             const totalSupply = ethers.utils.parseUnits('1000', 0);
-            const fee = ethers.utils.parseUnits('10', 18);
 
-            await teaToken.connect(owner).approve(tokenFactory.address, fee);
-
-            const tx = await tokenFactory.createToken(name, symbol, totalSupply);
+            const tx = await tokenFactory.createToken(name, symbol, totalSupply, {
+                value: ethers.utils.parseUnits('10', 18),
+            });
             const receipt = await tx.wait();
 
             const event = receipt.events.find((e) => e.event === 'TokenCreated');
@@ -51,9 +50,11 @@ describe('Token Creator Contract', function () {
             const symbol = 'NFT';
             const totalSupply = ethers.utils.parseUnits('1000', 0);
 
-            await expect(tokenFactory.createToken(name, symbol, totalSupply)).to.be.rejectedWith(
-                'ERC20InsufficientAllowance',
-            );
+            await expect(
+                tokenFactory.createToken(name, symbol, totalSupply, {
+                    value: ethers.utils.parseUnits('0', 18),
+                }),
+            ).to.be.rejectedWith('Insufficient fee');
         });
 
         it('Should reject if total supply is zero', async function () {
@@ -61,27 +62,30 @@ describe('Token Creator Contract', function () {
             const symbol = 'INV';
             const totalSupply = ethers.utils.parseUnits('0', 0);
 
-            await expect(tokenFactory.createToken(name, symbol, totalSupply)).to.be.rejectedWith(
-                'Total supply must be greater than zero',
-            );
+            await expect(
+                tokenFactory.createToken(name, symbol, totalSupply, {
+                    value: ethers.utils.parseUnits('10', 18),
+                }),
+            ).to.be.rejectedWith('Total supply must be greater than zero');
         });
     });
 
     describe('Fee Management', function () {
-        it('Should allow owner to withdraw collected fees', async function () {
+        it('Should store the fee in the contract after token creation', async function () {
             const fee = ethers.utils.parseUnits('10', 18);
             const name = 'Test Token';
             const symbol = 'TST';
             const totalSupply = ethers.utils.parseUnits('1000', 0);
 
-            await teaToken.connect(owner).approve(tokenFactory.address, fee);
-            await tokenFactory.connect(owner).createToken(name, symbol, totalSupply);
+            let contractBalance = await ethers.provider.getBalance(tokenFactory.address);
+            expect(contractBalance.toString()).to.equal('0');
 
-            const initialOwnerBalance = await teaToken.balanceOf(owner.address);
-            await tokenFactory.connect(owner).withdrawFees();
-            const finalOwnerBalance = await teaToken.balanceOf(owner.address);
+            await tokenFactory.connect(owner).createToken(name, symbol, totalSupply, {
+                value: fee,
+            });
 
-            expect(finalOwnerBalance.sub(initialOwnerBalance).toString()).to.equal(fee.toString());
+            contractBalance = await ethers.provider.getBalance(tokenFactory.address);
+            expect(contractBalance.toString()).to.equal(fee.toString());
         });
 
         it('Should reject fee withdrawal by non-owner', async function () {
