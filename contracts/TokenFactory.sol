@@ -32,16 +32,13 @@ contract TokenFactory {
         require(msg.value >= fee, 'Insufficient fee paid');
         require(totalSupply > 0, 'Total supply must be greater than zero');
 
-        (bool success, ) = nativeContract.call{value: fee}('');
-        require(success, 'Failed to forward fee to native contract');
-
         uint256 adjustedTotalSupply = totalSupply * 10 ** 18;
         ERC20Token newToken = new ERC20Token(name, symbol, adjustedTotalSupply, msg.sender);
 
         emit TokenCreated(address(newToken), name, symbol, adjustedTotalSupply);
 
         if (msg.value > fee) {
-            (success, ) = msg.sender.call{value: msg.value - fee}('');
+            (bool success, ) = msg.sender.call{value: msg.value - fee}('');
             require(success, 'Failed to refund excess fee');
         }
     }
@@ -52,9 +49,17 @@ contract TokenFactory {
     }
 
     function withdrawFees() public onlyOwner {
-        uint256 balance = ERC20(nativeContract).balanceOf(address(this));
+        uint256 balance = address(this).balance;
         require(balance > 0, 'No fees to withdraw');
-        ERC20(nativeContract).transfer(owner, balance);
+        (bool success, ) = owner.call{value: balance}('');
+        require(success, 'Withdrawal failed');
+    }
+
+    function forwardFeesToNative() public onlyOwner {
+        uint256 balance = address(this).balance;
+        require(balance > 0, 'No fees to forward');
+        (bool success, ) = nativeContract.call{value: balance}('');
+        require(success, 'Failed to forward fees to native contract');
     }
 }
 
