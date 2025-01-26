@@ -36,8 +36,9 @@ async function main() {
     const tokenFactory = await TokenFactory.deploy(native.address, fee);
     console.log('TokenFactory deployed to:', tokenFactory.address);
 
-    const owner = await tokenFactory.owner();
-    console.log('Owner of TokenFactory:', owner);
+    const Leaderboard = await hre.ethers.getContractFactory('Leaderboard');
+    const leaderboard = await Leaderboard.deploy();
+    console.log('Leaderboard contract deployed to:', leaderboard.address);
 }
 
 main()
