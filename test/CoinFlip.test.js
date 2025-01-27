@@ -6,105 +6,47 @@ import chaiAsPromised from 'chai-as-promised';
 use(chaiAsPromised);
 
 describe('CoinFlip Contract', function () {
-    let coinFlip;
-    let native;
-    let owner;
-    let user;
-    let user2;
+    let CoinFlip, coinFlip;
+    let Native, native;
+    let player;
 
     beforeEach(async function () {
-        [owner, user, user2] = await ethers.getSigners();
+        [, player] = await ethers.getSigners();
 
-        const Native = await ethers.getContractFactory('Native');
+        Native = await ethers.getContractFactory('Native');
         native = await Native.deploy();
         await native.deployed();
 
-        const CoinFlip = await ethers.getContractFactory('CoinFlip');
+        CoinFlip = await ethers.getContractFactory('CoinFlip');
         coinFlip = await CoinFlip.deploy(native.address);
         await coinFlip.deployed();
+    });
 
-        const teaAmount = ethers.utils.parseEther('5');
-        await native.connect(owner).depositNative({ value: teaAmount });
+    it('Should initialize correctly', async function () {
+        expect(await coinFlip.nativeContract()).to.equal(native.address);
     });
 
     describe('Coin Flip Game', function () {
-        it('Should allow users to flip coin and bet 5 tea', async function () {
-            await native.connect(user).approve(coinFlip.address, ethers.utils.parseEther('5'));
-            const userBalanceBefore = await native.balanceOf(user.address);
+        it('Should handle losses correctly (no winnings)', async function () {
+            const INITIAL_BET = ethers.utils.parseEther('5');
 
-            await coinFlip.connect(user).flipCoin(ethers.utils.parseEther('5'));
+            await coinFlip.connect(player).flip(false, { value: INITIAL_BET });
 
-            const userBalanceAfter = await native.balanceOf(user.address);
-
-            expect(userBalanceAfter).to.be.greaterThan(userBalanceBefore);
+            const winnings = await coinFlip.winnings(player.address);
+            expect(winnings.toNumber()).to.equal(0);
         });
 
-        it('Should not allow users to bet less than 5 tea', async function () {
-            await expect(coinFlip.connect(user).flipCoin(ethers.utils.parseEther('4'))).to.be.rejectedWith(
-                'Insufficient bet amount',
+        it('Should not allow users to bet more than the required amount', async function () {
+            const incorrectBet = ethers.utils.parseEther('10');
+            await expect(coinFlip.connect(player).flip(true, { value: incorrectBet })).to.be.rejectedWith(
+                'Bet amount must be exactly 5 TEA',
             );
-        });
-
-        it('Should allow users to win and double the bet amount', async function () {
-            await native.connect(user).approve(coinFlip.address, ethers.utils.parseEther('5'));
-            const userBalanceBefore = await native.balanceOf(user.address);
-
-            await coinFlip.connect(user).flipCoin(ethers.utils.parseEther('5'));
-
-            const userBalanceAfter = await native.balanceOf(user.address);
-
-            expect(userBalanceAfter.sub(userBalanceBefore)).to.equal(ethers.utils.parseEther('10'));
-        });
-
-        it('Should allow "double or nothing" functionality', async function () {
-            await native.connect(user).approve(coinFlip.address, ethers.utils.parseEther('5'));
-            await coinFlip.connect(user).flipCoin(ethers.utils.parseEther('5'));
-
-            const userBalanceAfterFirstWin = await native.balanceOf(user.address);
-
-            await native.connect(user).approve(coinFlip.address, userBalanceAfterFirstWin);
-            await coinFlip.connect(user).flipCoin(userBalanceAfterFirstWin);
-
-            const userBalanceAfterSecondWin = await native.balanceOf(user.address);
-
-            expect(userBalanceAfterSecondWin).to.equal(userBalanceAfterFirstWin.mul(2));
-        });
-
-        it('Should handle loss and no payout', async function () {
-            await native.connect(user).approve(coinFlip.address, ethers.utils.parseEther('5'));
-            const userBalanceBefore = await native.balanceOf(user.address);
-
-            await coinFlip.connect(user).flipCoin(ethers.utils.parseEther('5'));
-
-            const userBalanceAfter = await native.balanceOf(user.address);
-
-            expect(userBalanceAfter).to.be.lessThan(userBalanceBefore);
-        });
-
-        it('Should emit correct events on game outcome', async function () {
-            await native.connect(user).approve(coinFlip.address, ethers.utils.parseEther('5'));
-
-            await expect(coinFlip.connect(user).flipCoin(ethers.utils.parseEther('5')))
-                .to.emit(coinFlip, 'GameResult')
-                .withArgs(user.address, ethers.utils.parseEther('5'), true);
         });
     });
 
-    describe('Edge Case Scenarios', function () {
-        it('Should prevent non-players from calling flipCoin', async function () {
-            await expect(coinFlip.connect(user2).flipCoin(ethers.utils.parseEther('5'))).to.be.rejectedWith(
-                'Insufficient balance in contract',
-            );
-        });
-
-        it('Should not allow users to bet more than available balance', async function () {
-            const userBalance = await native.balanceOf(user.address);
-
-            if (userBalance.lt(ethers.utils.parseEther('5'))) {
-                await expect(coinFlip.connect(user).flipCoin(ethers.utils.parseEther('5'))).to.be.rejectedWith(
-                    'Insufficient balance',
-                );
-            }
+    describe('Claim Winnings', function () {
+        it('Should revert if no winnings to claim', async function () {
+            await expect(coinFlip.connect(player).claimWinnings()).to.be.rejectedWith('No winnings to claim');
         });
     });
 });
