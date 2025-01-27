@@ -14,6 +14,8 @@ contract CoinFlip {
 
     event FlipResult(address indexed player, bool won, uint256 amountWon, bool doubleOrNothing);
 
+    event WinningsClaimed(address indexed player, uint256 amount);
+
     constructor(address _nativeContract) {
         nativeContract = _nativeContract;
     }
@@ -63,6 +65,12 @@ contract CoinFlip {
 
         (bool success, ) = msg.sender.call{value: amount}('');
         require(success, 'Reward transfer failed');
+
+        emit WinningsClaimed(msg.sender, amount);
+    }
+
+    function getUserWinnings(address user) external view returns (uint256) {
+        return winnings[user];
     }
 
     function random() internal view returns (uint256) {
