@@ -16,7 +16,7 @@ contract Token is ERC20, Ownable {
     event TokensMinted(address indexed to, uint256 amount);
     event TokensBurned(address indexed burner, uint256 amount);
 
-    constructor() ERC20('Stofmap Token V3', 'SFT3') Ownable(msg.sender) {
+    constructor() ERC20('One Dionys Token', 'ODT') Ownable(msg.sender) {
         _mint(msg.sender, initialSupply);
     }
 
