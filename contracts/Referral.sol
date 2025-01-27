@@ -1,0 +1,108 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.28;
+
+interface IERC20 {
+    function transfer(address recipient, uint256 amount) external returns (bool);
+    function balanceOf(address account) external view returns (uint256);
+}
+
+contract Referral {
+    IERC20 public token;
+
+    struct ReferralDetail {
+        address referredWallet;
+        uint256 registrationTime;
+    }
+
+    struct User {
+        uint256 referralsCount;
+        uint256 registrationTime;
+        bool exists;
+        ReferralDetail[] referralDetails;
+    }
+
+    mapping(address => User) public users;
+    mapping(address => address) public referredBy;
+    address[] public allUsers;
+
+    uint256 public constant REWARD_AMOUNT = 100 * 10 ** 18;
+
+    address public owner;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, 'Not the owner');
+        _;
+    }
+
+    event UserRegistered(address indexed user, address indexed referrer, uint256 timestamp);
+    event RewardIssued(address indexed referrer, uint256 reward);
+
+    constructor(address _tokenAddress) {
+        token = IERC20(_tokenAddress);
+        owner = msg.sender;
+    }
+
+    function register(address _referrer) external {
+        require(!users[msg.sender].exists, 'User already registered');
+        require(_referrer != msg.sender, 'Invalid referrer');
+        require(_referrer == address(0) || users[_referrer].exists, 'Invalid referrer');
+
+        users[msg.sender].exists = true;
+        users[msg.sender].registrationTime = block.timestamp;
+        allUsers.push(msg.sender);
+
+        if (_referrer != address(0)) {
+            referredBy[msg.sender] = _referrer;
+
+            users[_referrer].referralsCount++;
+            users[_referrer].referralDetails.push(ReferralDetail(msg.sender, block.timestamp));
+
+            require(token.transfer(_referrer, REWARD_AMOUNT), 'Reward transfer failed');
+            emit RewardIssued(_referrer, REWARD_AMOUNT);
+        }
+
+        emit UserRegistered(msg.sender, _referrer, block.timestamp);
+    }
+
+    function getLeaderboard() external view returns (address[] memory, uint256[] memory) {
+        uint256 length = allUsers.length;
+        address[] memory leaderboardAddresses = new address[](length);
+        uint256[] memory leaderboardCounts = new uint256[](length);
+
+        for (uint256 i = 0; i < length; i++) {
+            leaderboardAddresses[i] = allUsers[i];
+            leaderboardCounts[i] = users[allUsers[i]].referralsCount;
+        }
+
+        for (uint256 i = 0; i < length; i++) {
+            for (uint256 j = 0; j < length - 1; j++) {
+                if (leaderboardCounts[j] < leaderboardCounts[j + 1]) {
+                    uint256 tempCount = leaderboardCounts[j];
+                    leaderboardCounts[j] = leaderboardCounts[j + 1];
+                    leaderboardCounts[j + 1] = tempCount;
+
+                    address tempAddress = leaderboardAddresses[j];
+                    leaderboardAddresses[j] = leaderboardAddresses[j + 1];
+                    leaderboardAddresses[j + 1] = tempAddress;
+                }
+            }
+        }
+
+        return (leaderboardAddresses, leaderboardCounts);
+    }
+
+    function getReferralDetails(address _user) external view returns (ReferralDetail[] memory) {
+        require(users[_user].exists, 'User not registered');
+        return users[_user].referralDetails;
+    }
+
+    function getUserDetails(address _user) external view returns (uint256 referralsCount, uint256 registrationTime) {
+        require(users[_user].exists, 'User not registered');
+        return (users[_user].referralsCount, users[_user].registrationTime);
+    }
+
+    function withdrawTokens() external onlyOwner {
+        uint256 balance = token.balanceOf(address(this));
+        require(token.transfer(owner, balance), 'Withdraw failed');
+    }
+}
