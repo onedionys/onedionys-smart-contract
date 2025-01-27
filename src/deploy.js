@@ -45,7 +45,7 @@ async function main() {
     console.log(`const referralContractAddress = '${referral.address}';`);
 
     const NameService = await hre.ethers.getContractFactory('NameService');
-    const nameService = await NameService.deploy(token.address);
+    const nameService = await NameService.deploy();
     console.log(`const nameServiceContractAddress = '${nameService.address}';`);
 }
 
