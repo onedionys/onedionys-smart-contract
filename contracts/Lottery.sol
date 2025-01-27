@@ -22,7 +22,7 @@ contract Lottery is Ownable {
     mapping(address => uint256) public lastSpinTime;
 
     uint256 public ticketPrice = 10 * 10 ** 18;
-    uint256 public spinCooldown = 1 minutes;
+    uint256 public spinCooldown = 5 minutes;
     uint256 public totalRewardPool;
 
     struct LeaderboardEntry {
