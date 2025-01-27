@@ -39,6 +39,10 @@ async function main() {
     const Leaderboard = await hre.ethers.getContractFactory('Leaderboard');
     const leaderboard = await Leaderboard.deploy();
     console.log('Leaderboard contract deployed to:', leaderboard.address);
+
+    const Referral = await hre.ethers.getContractFactory('Referral');
+    const referral = await Referral.deploy();
+    console.log('Referral contract deployed to:', referral.address);
 }
 
 main()
