@@ -6,7 +6,7 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 
 contract Token is ERC20, Ownable {
     uint256 public initialSupply = 1_000_000 * 10 ** 18;
-    uint256 public faucetAmount = 10000 * 10 ** 18;
+    uint256 public faucetAmount = 100 * 10 ** 18;
     uint256 public faucetLimit = 500_000 * 10 ** 18;
     uint256 public totalFaucetDistributed;
 
