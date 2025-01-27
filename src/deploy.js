@@ -34,15 +34,19 @@ async function main() {
 
     const TokenFactory = await hre.ethers.getContractFactory('TokenFactory');
     const tokenFactory = await TokenFactory.deploy(native.address, fee);
-    console.log(`const tokenFactoryAddress = '${tokenFactory.address}';`);
+    console.log(`const tokenFactoryContractAddress = '${tokenFactory.address}';`);
 
     const Leaderboard = await hre.ethers.getContractFactory('Leaderboard');
     const leaderboard = await Leaderboard.deploy();
-    console.log(`const leaderboardAddress = '${leaderboard.address}';`);
+    console.log(`const leaderboardContractAddress = '${leaderboard.address}';`);
 
     const Referral = await hre.ethers.getContractFactory('Referral');
     const referral = await Referral.deploy(token.address);
-    console.log(`const referralAddress = '${referral.address}';`);
+    console.log(`const referralContractAddress = '${referral.address}';`);
+
+    const NameService = await hre.ethers.getContractFactory('NameService');
+    const nameService = await NameService.deploy(token.address);
+    console.log(`const nameServiceContractAddress = '${nameService.address}';`);
 }
 
 main()
