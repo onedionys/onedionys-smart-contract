@@ -1,10 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-interface IERC20 {
-    function transfer(address recipient, uint256 amount) external returns (bool);
-    function balanceOf(address account) external view returns (uint256);
-}
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 
 contract Referral {
     IERC20 public token;
@@ -26,6 +23,7 @@ contract Referral {
     address[] public allUsers;
 
     uint256 public constant REWARD_AMOUNT = 100 * 10 ** 18;
+    uint256 public totalRewardPool;
 
     address public owner;
 
@@ -36,6 +34,7 @@ contract Referral {
 
     event UserRegistered(address indexed user, address indexed referrer, uint256 timestamp);
     event RewardIssued(address indexed referrer, uint256 reward);
+    event RewardTokensAdded(uint256 amount);
 
     constructor(address _tokenAddress) {
         token = IERC20(_tokenAddress);
@@ -46,6 +45,7 @@ contract Referral {
         require(!users[msg.sender].exists, 'User already registered');
         require(_referrer != msg.sender, 'Invalid referrer');
         require(_referrer == address(0) || users[_referrer].exists, 'Invalid referrer');
+        require(totalRewardPool >= REWARD_AMOUNT, 'Not enough tokens in contract for rewards');
 
         users[msg.sender].exists = true;
         users[msg.sender].registrationTime = block.timestamp;
@@ -56,6 +56,8 @@ contract Referral {
 
             users[_referrer].referralsCount++;
             users[_referrer].referralDetails.push(ReferralDetail(msg.sender, block.timestamp));
+
+            totalRewardPool -= REWARD_AMOUNT;
 
             require(token.transfer(_referrer, REWARD_AMOUNT), 'Reward transfer failed');
             emit RewardIssued(_referrer, REWARD_AMOUNT);
@@ -104,5 +106,17 @@ contract Referral {
     function withdrawTokens() external onlyOwner {
         uint256 balance = token.balanceOf(address(this));
         require(token.transfer(owner, balance), 'Withdraw failed');
+    }
+
+    function addRewardTokens(uint256 amount) external onlyOwner {
+        require(amount > 0, 'Amount should be greater than 0');
+
+        uint256 allowance = token.allowance(msg.sender, address(this));
+        require(allowance >= amount, 'Allowance not sufficient to add reward tokens');
+
+        token.transferFrom(msg.sender, address(this), amount);
+        totalRewardPool += amount;
+
+        emit RewardTokensAdded(amount);
     }
 }
