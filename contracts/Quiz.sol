@@ -9,7 +9,7 @@ contract Quiz is Ownable {
 
     uint256 public totalRewardPool;
     uint256 public maxReward = 10 * 3 * 10 ** 18;
-    uint256 public timePerQuestion = 30;
+    uint256 public timePerQuestion = 60;
     uint256 public totalQuestions = 10;
 
     mapping(address => uint256) public userPoints;
