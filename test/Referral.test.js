@@ -6,10 +6,10 @@ import chaiAsPromised from 'chai-as-promised';
 use(chaiAsPromised);
 
 describe('Referral System Contract', function () {
-    let token, referral, user1, user2;
+    let token, owner, referral, user1, user2;
 
     beforeEach(async function () {
-        [, user1, user2] = await ethers.getSigners();
+        [owner, user1, user2] = await ethers.getSigners();
 
         const Token = await ethers.getContractFactory('Token');
         token = await Token.deploy();
@@ -20,6 +20,10 @@ describe('Referral System Contract', function () {
         await referral.deployed();
 
         await token.mint(referral.address, ethers.utils.parseEther('10000'));
+        const rewardAmount = ethers.utils.parseEther('10000');
+        await token.mint(owner.address, rewardAmount);
+        await token.approve(referral.address, rewardAmount);
+        await referral.addRewardTokens(rewardAmount);
     });
 
     describe('Registration and Referral', function () {
