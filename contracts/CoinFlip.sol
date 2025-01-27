@@ -66,6 +66,6 @@ contract CoinFlip {
     }
 
     function random() internal view returns (uint256) {
-    return uint256(keccak256(abi.encodePacked(block.prevrandao, block.timestamp, msg.sender)));
-}
+        return uint256(keccak256(abi.encodePacked(block.prevrandao, block.timestamp, msg.sender)));
+    }
 }
