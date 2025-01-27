@@ -10,39 +10,39 @@ async function main() {
 
     const Token = await hre.ethers.getContractFactory('Token');
     const token = await Token.deploy();
-    console.log('Token deployed to:', token.address);
+    console.log(`const tokenContractAddress = '${token.address}';`);
 
     const Staking = await hre.ethers.getContractFactory('Staking');
     const staking = await Staking.deploy(token.address);
-    console.log('Staking contract deployed to:', staking.address);
+    console.log(`const stakingContractAddress = '${staking.address}';`);
 
     const Quiz = await hre.ethers.getContractFactory('Quiz');
     const quiz = await Quiz.deploy(token.address);
-    console.log('Quiz contract deployed to:', quiz.address);
+    console.log(`const quizContractAddress = '${quiz.address}';`);
 
     const NFTCollection = await hre.ethers.getContractFactory('NFTCollection');
     const nftCollection = await NFTCollection.deploy();
-    console.log('NFTCollection contract deployed to:', nftCollection.address);
+    console.log(`const nftCollectionContractAddress = '${nftCollection.address}';`);
 
     const Lottery = await hre.ethers.getContractFactory('Lottery');
     const lottery = await Lottery.deploy(token.address, nftCollection.address);
-    console.log('Lottery contract deployed to:', lottery.address);
+    console.log(`const lotteryContractAddress = '${lottery.address}';`);
 
     const Native = await hre.ethers.getContractFactory('Native');
     const native = await Native.deploy();
-    console.log('Native contract deployed to:', native.address);
+    console.log(`const nativeContractAddress = '${native.address}';`);
 
     const TokenFactory = await hre.ethers.getContractFactory('TokenFactory');
     const tokenFactory = await TokenFactory.deploy(native.address, fee);
-    console.log('TokenFactory deployed to:', tokenFactory.address);
+    console.log(`const tokenFactoryAddress = '${tokenFactory.address}';`);
 
     const Leaderboard = await hre.ethers.getContractFactory('Leaderboard');
     const leaderboard = await Leaderboard.deploy();
-    console.log('Leaderboard contract deployed to:', leaderboard.address);
+    console.log(`const leaderboardAddress = '${leaderboard.address}';`);
 
     const Referral = await hre.ethers.getContractFactory('Referral');
     const referral = await Referral.deploy(token.address);
-    console.log('Referral contract deployed to:', referral.address);
+    console.log(`const referralAddress = '${referral.address}';`);
 }
 
 main()
