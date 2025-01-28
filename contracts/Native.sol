@@ -11,7 +11,6 @@ contract Native is Ownable {
     mapping(address => uint256) public lastClaimTime;
 
     event FaucetClaimed(address indexed claimer, uint256 amount);
-
     event DonationReceived(address indexed donor, uint256 amount);
 
     constructor() Ownable(msg.sender) {}
