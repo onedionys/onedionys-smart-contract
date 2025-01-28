@@ -18,19 +18,19 @@ contract Lottery is Ownable {
     IERC20 public token;
     INFTCollection public nftCollection;
 
-    mapping(address => uint256) public userPoints;
-    mapping(address => uint256) public lastSpinTime;
-
-    uint256 public ticketPrice = 10 * 10 ** 18;
-    uint256 public spinCooldown = 5 minutes;
-    uint256 public totalRewardPool;
-
     struct LeaderboardEntry {
         address user;
         uint256 points;
     }
 
+    uint256 public ticketPrice = 10 * 10 ** 18;
+    uint256 public spinCooldown = 5 minutes;
+    uint256 public totalRewardPool;
+
     LeaderboardEntry[] public leaderboard;
+
+    mapping(address => uint256) public userPoints;
+    mapping(address => uint256) public lastSpinTime;
 
     event SpinWheel(address indexed user, string rarity, uint256 points, string cid);
     event LeaderboardUpdated(address indexed user, uint256 points);
