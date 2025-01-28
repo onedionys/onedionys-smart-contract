@@ -10,10 +10,10 @@ contract Leaderboard {
         string txhash;
     }
 
+    address[] public users;
+
     mapping(address => Activity[]) public userActivities;
     mapping(address => bool) public isUserRegistered;
-
-    address[] public users;
 
     event ActivityAdded(
         address indexed user,
