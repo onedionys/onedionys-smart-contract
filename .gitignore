@@ -54,10 +54,5 @@ ignition/deployments/chain-31337
 
 # Urgent Files
 # Test Automated Script
-src/interact.js
-src/mintBurn.js
-src/wow.js
-src/newInteraction.js
-contracts/backup/
-test/backup/
+src/forTest/
 wallets.json
