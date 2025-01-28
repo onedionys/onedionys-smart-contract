@@ -5,7 +5,7 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 
 contract Native is Ownable {
     uint256 public faucetAmount = 1 * 10 ** 18;
-    uint256 public faucetLimit = 1000 * 10 ** 18;
+    uint256 public faucetLimit = 5000 * 10 ** 18;
     uint256 public totalFaucetDistributed;
 
     mapping(address => uint256) public lastClaimTime;
