@@ -18,23 +18,22 @@ contract Referral {
         ReferralDetail[] referralDetails;
     }
 
-    mapping(address => User) public users;
-    mapping(address => address) public referredBy;
-    address[] public allUsers;
-
     uint256 public constant REWARD_AMOUNT = 100 * 10 ** 18;
     uint256 public totalRewardPool;
-
+    address[] public allUsers;
     address public owner;
+
+    mapping(address => User) public users;
+    mapping(address => address) public referredBy;
+
+    event UserRegistered(address indexed user, address indexed referrer, uint256 timestamp);
+    event RewardIssued(address indexed referrer, uint256 reward);
+    event RewardTokensAdded(uint256 amount);
 
     modifier onlyOwner() {
         require(msg.sender == owner, 'Not the owner');
         _;
     }
-
-    event UserRegistered(address indexed user, address indexed referrer, uint256 timestamp);
-    event RewardIssued(address indexed referrer, uint256 reward);
-    event RewardTokensAdded(uint256 amount);
 
     constructor(address _tokenAddress) {
         token = IERC20(_tokenAddress);
