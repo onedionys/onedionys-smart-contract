@@ -5,17 +5,18 @@ import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 
 contract NFTCollection is ERC721URIStorage, Ownable {
-    uint256 public nextTokenId;
-    mapping(uint256 => NFTDetails) public nftDetails;
-    mapping(address => uint256[]) private userTokens;
-    mapping(string => string) public rarityMetadataCID;
-    address public lotteryContract;
-
     struct NFTDetails {
         string rarity;
         uint256 points;
         string cid;
     }
+
+    uint256 public nextTokenId;
+    address public lotteryContract;
+
+    mapping(uint256 => NFTDetails) public nftDetails;
+    mapping(address => uint256[]) private userTokens;
+    mapping(string => string) public rarityMetadataCID;
 
     event NFTMinted(address indexed to, uint256 tokenId, string rarity, uint256 points, string cid);
     event NFTBurned(address indexed owner, uint256 tokenId);
