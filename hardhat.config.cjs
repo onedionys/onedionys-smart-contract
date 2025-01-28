@@ -4,10 +4,9 @@ require('dotenv').config();
 
 const process = require('process');
 
-/** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
     solidity: {
-        version: '0.8.28', // Pastikan ini sesuai dengan pragma Solidity
+        version: '0.8.28',
         settings: {
             optimizer: {
                 enabled: true,
@@ -20,6 +19,8 @@ module.exports = {
             url: process.env.RPC_URL,
             accounts: [process.env.PRIVATE_KEY],
             chainId: Number(process.env.CHAIN_ID),
+            gas: 12000000,
+            gasPrice: 20000000000,
         },
     },
 };
