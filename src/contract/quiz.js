@@ -3,6 +3,7 @@ import process from 'process';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
+// import ora from 'ora';
 
 const getABI = (toPath = '') => {
     const __filename = fileURLToPath(import.meta.url);
