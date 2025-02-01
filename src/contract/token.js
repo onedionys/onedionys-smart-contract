@@ -3,6 +3,7 @@ import process from 'process';
 import fs from 'fs';
 import path from 'path';
 import ora from 'ora';
+import { getErrorMessage } from './../utils.js';
 
 const getABI = (toPath = '') => {
     const cwd = process.cwd();
@@ -45,16 +46,7 @@ export async function transferTea(wallet, amount = 0) {
         console.log(`✅ Successfully transferred ${amountFormattedString} tokens to address ${wallet.address}`);
     } catch (error) {
         spinner.stop();
-
-        let errorMessage = 'An unknown error occurred';
-
-        if (error?.error?.reason) {
-            let reason = error.error.reason;
-            reason = reason.split(': ').pop();
-            errorMessage = `${error.error.code} - ${reason}`;
-        }
-
-        console.log(`❌ An error occurred during the token transfer: ${errorMessage}`);
+        console.log(`❌ An error occurred during the token transfer: ${getErrorMessage(error)}`);
     }
 }
 
@@ -97,16 +89,7 @@ export async function claimFaucet(wallet) {
         console.log(`✅ Successfully claim faucet for address ${wallet.address}`);
     } catch (error) {
         spinner.stop();
-
-        let errorMessage = 'An unknown error occurred';
-
-        if (error?.error?.reason) {
-            let reason = error.error.reason;
-            reason = reason.split(': ').pop();
-            errorMessage = `${error.error.code} - ${reason}`;
-        }
-
-        console.log(`❌ An error occurred while claiming the faucet: ${errorMessage}`);
+        console.log(`❌ An error occurred while claiming the faucet: ${getErrorMessage(error)}`);
     }
 }
 
@@ -138,15 +121,6 @@ export async function burnToken(wallet, amount) {
         console.log(`✅ Successfully burn ${amountFormattedString} tokens from address ${wallet.address}`);
     } catch (error) {
         spinner.stop();
-
-        let errorMessage = 'An unknown error occurred';
-
-        if (error?.error?.reason) {
-            let reason = error.error.reason;
-            reason = reason.split(': ').pop();
-            errorMessage = `${error.error.code} - ${reason}`;
-        }
-
-        console.log(`❌ An error occurred while burning the token: ${errorMessage}`);
+        console.log(`❌ An error occurred while burning the token: ${getErrorMessage(error)}`);
     }
 }
