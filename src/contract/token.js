@@ -1,28 +1,18 @@
 import { ethers } from 'ethers';
 import process from 'process';
-import fs from 'fs';
-import path from 'path';
 import ora from 'ora';
-import { getErrorMessage } from './../utils.js';
-
-const getABI = (toPath = '') => {
-    const cwd = process.cwd();
-    const filePath = path.resolve(cwd, `artifacts/contracts/${toPath}`);
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-
-    return JSON.parse(fileContent);
-};
+import { getErrorMessage, getJsonABI } from './../utils.js';
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
 const contractAddress = process.env.TOKEN_CONTRACT_ADDRESS;
-const contractJson = getABI('Token.sol/Token.json');
+const contractJson = getJsonABI('Token.sol/Token.json');
 const contractAbi = contractJson.abi;
 const contractInteraction = new ethers.Contract(contractAddress, contractAbi, mainWallet);
 
 const leaderboardAddress = process.env.LEADERBOARD_CONTRACT_ADDRESS;
-const leaderboardJson = getABI('Leaderboard.sol/Leaderboard.json');
+const leaderboardJson = getJsonABI('Leaderboard.sol/Leaderboard.json');
 const leaderboardAbi = leaderboardJson.abi;
 const leaderboardInteraction = new ethers.Contract(leaderboardAddress, leaderboardAbi, mainWallet);
 
