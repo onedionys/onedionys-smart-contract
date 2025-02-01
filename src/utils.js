@@ -1,3 +1,7 @@
+import process from 'process';
+import fs from 'fs';
+import path from 'path';
+
 export function getErrorMessage(error) {
     let errorMessage = 'An unknown error occurred';
 
@@ -8,4 +12,12 @@ export function getErrorMessage(error) {
     }
 
     return errorMessage;
+}
+
+export function getJsonABI(toPath = '') {
+    const cwd = process.cwd();
+    const filePath = path.resolve(cwd, `artifacts/contracts/${toPath}`);
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+
+    return JSON.parse(fileContent);
 }
