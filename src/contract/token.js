@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import process from 'process';
 import ora from 'ora';
 import { getErrorMessage, getJsonABI } from './../utils.js';
+import { addActivity } from './leaderboard.js';
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
@@ -11,12 +12,8 @@ const contractJson = getJsonABI('Token.sol/Token.json');
 const contractAbi = contractJson.abi;
 const contractInteraction = new ethers.Contract(contractAddress, contractAbi, mainWallet);
 
-const leaderboardAddress = process.env.LEADERBOARD_CONTRACT_ADDRESS;
-const leaderboardJson = getJsonABI('Leaderboard.sol/Leaderboard.json');
-const leaderboardAbi = leaderboardJson.abi;
-const leaderboardInteraction = new ethers.Contract(leaderboardAddress, leaderboardAbi, mainWallet);
-
 export async function transferTea(wallet, amount = 0) {
+    console.log(`🤖 Processing: Transfer TEA`);
     console.log(`⏳ Current Time: ${new Date().toString()}`);
     const spinner = ora('Loading...').start();
 
@@ -41,6 +38,7 @@ export async function transferTea(wallet, amount = 0) {
 }
 
 export async function claimFaucet(wallet) {
+    console.log(`🤖 Processing: Faucet Claim`);
     console.log(`⏳ Current Time: ${new Date().toString()}`);
     const spinner = ora('Loading...').start();
 
@@ -65,14 +63,13 @@ export async function claimFaucet(wallet) {
 
         const amountFormattedString = amountClaimed.toLocaleString('en-US');
 
-        const activity = await leaderboardInteraction.addActivity(
+        await addActivity(
             wallet.address,
             'Faucet Claim',
             `Claimed ${amountFormattedString} tokens from the faucet.`,
             amountClaimed,
             receipt.transactionHash,
         );
-        await activity.wait();
         spinner.stop();
 
         console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
@@ -84,6 +81,7 @@ export async function claimFaucet(wallet) {
 }
 
 export async function burnToken(wallet, amount) {
+    console.log(`🤖 Processing: Token Burn`);
     console.log(`⏳ Current Time: ${new Date().toString()}`);
     const spinner = ora('Loading...').start();
 
@@ -97,14 +95,13 @@ export async function burnToken(wallet, amount) {
         const transaction = await connectWallet.burn(amount);
         const receipt = await transaction.wait();
 
-        const activity = await leaderboardInteraction.addActivity(
+        await addActivity(
             wallet.address,
             'Token Burn',
             `Burned ${amountFormattedString} tokens.`,
             amountBurned,
             receipt.transactionHash,
         );
-        await activity.wait();
         spinner.stop();
 
         console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
