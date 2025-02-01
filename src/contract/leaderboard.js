@@ -26,26 +26,55 @@ export async function addActivity(address = '', title = '', description = '', am
     }
 }
 
-export async function getUsers() {}
+export async function getUsers() {
+    const spinner = ora('Loading...').start();
 
-export async function getActivities() {}
+    try {
+        const wallet = await contractInteraction.getAllUsers();
+        const walletData = await Promise.all(
+            wallet.map(async (wallet) => {
+                const activities = await contractInteraction.getActivities(wallet);
+                return {
+                    wallet,
+                    activityCount: activities.length,
+                };
+            }),
+        );
+        spinner.stop();
 
-// async function getAllUsersLeaderboard() {
-//     const users = await leaderboardContract.getAllUsers();
-//     const walletData = await Promise.all(
-//         users.map(async (wallet) => {
-//             const activities = await leaderboardContract.getActivities(wallet);
-//             return {
-//                 wallet,
-//                 activityCount: activities.length,
-//             };
-//         }),
-//     );
+        return walletData;
+    } catch (error) {
+        spinner.stop();
+        console.log(`❌ An error occurred when getting the user list: ${getErrorMessage(error)}`);
+        return [];
+    }
+}
 
-//     console.log(walletData);
-// }
+export async function getActivities(address = '') {
+    const spinner = ora('Loading...').start();
 
-// async function getUsersActivity(wallet) {
-//     const tx = await leaderboardContract.getActivities(wallet.address);
-//     console.log(tx);
-// }
+    try {
+        const activities = await contractInteraction.getActivities(address);
+        const activitiesData = activities
+            .map((wallet) => {
+                const amount = ethers.utils.parseUnits(wallet.amount.toString(), 18);
+                const amountFloat = parseFloat(ethers.utils.formatUnits(amount, 18));
+
+                return {
+                    activity: wallet.activity,
+                    description: wallet.description,
+                    amount: amountFloat,
+                    timestamp: wallet.timestamp.toNumber(),
+                    txhash: wallet.txhash,
+                };
+            })
+            .filter((item) => item !== null);
+        spinner.stop();
+
+        return activitiesData;
+    } catch (error) {
+        spinner.stop();
+        console.log(`❌ An error occurred while getting the user activity list: ${getErrorMessage(error)}`);
+        return [];
+    }
+}
