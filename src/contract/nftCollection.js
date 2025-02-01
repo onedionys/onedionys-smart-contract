@@ -1,31 +1,24 @@
 import { ethers } from 'ethers';
 import process from 'process';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-import path from 'path';
-// import ora from 'ora';
-
-const getABI = (toPath = '') => {
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-    const filePath = path.resolve(__dirname, `./artifacts/contracts/${toPath}`);
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-
-    return JSON.parse(fileContent);
-};
+import ora from 'ora';
+import { getErrorMessage, getJsonABI } from './../utils.js';
+import { addActivity } from './leaderboard.js';
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
-const userWallet = new ethers.Wallet(process.env.USER_PRIVATE_KEY, provider);
 
 const contractAddress = process.env.NFT_COLLECTION_CONTRACT_ADDRESS;
-const contractJson = getABI('NFTCollection.sol/NFTCollection.json');
+const contractJson = getJsonABI('NFTCollection.sol/NFTCollection.json');
 const contractAbi = contractJson.abi;
 const contractInteraction = new ethers.Contract(contractAddress, contractAbi, mainWallet);
 
-const leaderboardAddress = process.env.LEADERBOARD_CONTRACT_ADDRESS;
-const leaderboardJson = getABI('Leaderboard.sol/Leaderboard.json');
-const leaderboardAbi = leaderboardJson.abi;
-const leaderboardInteraction = new ethers.Contract(leaderboardAddress, leaderboardAbi, mainWallet);
+async function setLotteryContract() {
+    const tx = await nftCollectionContract.setLotteryContract(lotteryContractAddress);
+    await tx.wait();
+    console.log('Lottery contract set successfully in NFTCollection contract.');
+}
 
-console.log(userWallet, contractInteraction, leaderboardInteraction);
+async function getNFTDetails(tokenId) {
+    const [rarity, points, cid] = await nftCollectionContract.getNFTDetails(tokenId);
+    console.log(`NFT Details: Token ID: ${tokenId}, Rarity: ${rarity}, Points: ${points}, CID: ${cid}`);
+}
