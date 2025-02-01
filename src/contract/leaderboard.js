@@ -11,6 +11,10 @@ const contractJson = getJsonABI('Leaderboard.sol/Leaderboard.json');
 const contractAbi = contractJson.abi;
 const contractInteraction = new ethers.Contract(contractAddress, contractAbi, mainWallet);
 
+const leaderboardContract = contractInteraction;
+
+export { leaderboardContract };
+
 export async function addActivity(address = '', title = '', description = '', amount = 0, transactionHash = '') {
     const spinner = ora('Loading...').start();
 
