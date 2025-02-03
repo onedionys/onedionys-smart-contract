@@ -13,6 +13,11 @@ const contractAbi = contractJson.abi;
 const contractInteraction = new ethers.Contract(contractAddress, contractAbi, mainWallet);
 const userWallet = new ethers.Wallet(process.env.USER_PRIVATE_KEY, provider);
 
+const tokenFactoryContract = contractInteraction;
+const tokenFactoryContractAddress = contractAddress;
+
+export { tokenFactoryContract, tokenFactoryContractAddress };
+
 async function getTokenFactoryDetails() {
     const currentFee = await tokenFactoryContract.fee();
     const ownerAddress = await tokenFactoryContract.owner();
