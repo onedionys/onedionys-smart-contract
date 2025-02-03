@@ -13,8 +13,9 @@ const contractAbi = contractJson.abi;
 const contractInteraction = new ethers.Contract(contractAddress, contractAbi, mainWallet);
 
 const tokenContract = contractInteraction;
+const tokenContractAddress = contractAddress;
 
-export { tokenContract };
+export { tokenContract, tokenContractAddress };
 
 export async function transferTea(wallet, amount = 0) {
     console.log(`🤖 Processing: Transfer TEA`);
@@ -88,7 +89,7 @@ export async function claimFaucet(wallet) {
     }
 }
 
-export async function burnToken(wallet, amount) {
+export async function burnToken(wallet, amount = 0) {
     console.log(`🤖 Processing: Token Burn`);
     console.log(`⏳ Current Time: ${new Date().toString()}`);
     const spinner = ora('Loading...').start();
