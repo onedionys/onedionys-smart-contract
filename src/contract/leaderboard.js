@@ -12,8 +12,9 @@ const contractAbi = contractJson.abi;
 const contractInteraction = new ethers.Contract(contractAddress, contractAbi, mainWallet);
 
 const leaderboardContract = contractInteraction;
+const leaderboardContractAddress = contractAddress;
 
-export { leaderboardContract };
+export { leaderboardContract, leaderboardContractAddress };
 
 export async function addActivity(address = '', title = '', description = '', amount = 0, transactionHash = '') {
     const spinner = ora('Loading...').start();
