@@ -12,6 +12,11 @@ const contractJson = getJsonABI('Native.sol/Native.json');
 const contractAbi = contractJson.abi;
 const contractInteraction = new ethers.Contract(contractAddress, contractAbi, mainWallet);
 
+const nativeContract = contractInteraction;
+const nativeContractAddress = contractAddress;
+
+export { nativeContract, nativeContractAddress };
+
 async function depositNativeToken(amount) {
     const poolAmount = ethers.utils.parseEther(amount.toString());
 
