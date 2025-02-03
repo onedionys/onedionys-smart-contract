@@ -12,6 +12,11 @@ const contractJson = getJsonABI('Quiz.sol/Quiz.json');
 const contractAbi = contractJson.abi;
 const contractInteraction = new ethers.Contract(contractAddress, contractAbi, mainWallet);
 
+const quizContract = contractInteraction;
+const quizContractAddress = contractAddress;
+
+export { quizContract, quizContractAddress };
+
 async function joinQuiz(wallet) {
     const walletInstance = new ethers.Wallet(wallet.privateKey, provider);
     const amount = ethers.utils.parseUnits('15', 18);
