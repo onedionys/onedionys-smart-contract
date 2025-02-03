@@ -18,14 +18,14 @@ const tokenFactoryContractAddress = contractAddress;
 
 export { tokenFactoryContract, tokenFactoryContractAddress };
 
-async function getTokenFactoryDetails() {
+async function getDetails() {
     const currentFee = await tokenFactoryContract.fee();
     const ownerAddress = await tokenFactoryContract.owner();
     console.log(`Current Fee: ${ethers.utils.formatUnits(currentFee, 18)} TEA`);
     console.log(`Contract Owner: ${ownerAddress}`);
 }
 
-async function updateFactoryFee(newFee) {
+async function updateFee(newFee) {
     const feeAmount = ethers.utils.parseUnits(newFee.toString(), 18);
     const tx = await tokenFactoryContract.updateFee(feeAmount);
     await tx.wait();
@@ -68,7 +68,7 @@ async function createToken(wallet, name, symbol, totalSupply) {
     }
 }
 
-async function withdrawFees() {
+async function withdraw() {
     const tx = await tokenFactoryContract.withdrawFees();
     await tx.wait();
     console.log('Withdrawn all fees');
