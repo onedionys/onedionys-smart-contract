@@ -12,6 +12,11 @@ const contractJson = getJsonABI('Staking.sol/Staking.json');
 const contractAbi = contractJson.abi;
 const contractInteraction = new ethers.Contract(contractAddress, contractAbi, mainWallet);
 
+const stakingContract = contractInteraction;
+const stakingContractAddress = contractAddress;
+
+export { stakingContract, stakingContractAddress };
+
 async function addRewardTokensStaking(amount) {
     const rewardAmount = ethers.utils.parseUnits(amount.toString(), 18);
 
