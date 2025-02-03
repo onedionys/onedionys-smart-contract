@@ -23,7 +23,7 @@ export async function register(wallet, name = 'onedionys') {
     const spinner = ora('Loading...').start();
 
     try {
-        const amount = ethers.utils.parseUnits('20', 18);
+        const amount = ethers.utils.parseUnits('1', 18);
         const amountFee = parseFloat(ethers.utils.formatUnits(amount, 18));
         const amountFeeFormatted = amountFee.toLocaleString('en-US');
 
@@ -98,3 +98,25 @@ export async function withdraw() {
         console.log(`❌ An error occurred while withdrawing all tokens: ${getErrorMessage(error)}`);
     }
 }
+
+// console.log(" ");
+// console.log("======================================");
+// console.log(" ");
+// await register(mainWallet, "dionysone");
+// console.log(" ");
+// console.log("======================================");
+// console.log(" ");
+// const name = await getName("0xa276d7a3128ec6408162031b5088780ed2957da9");
+// console.log(name);
+// console.log(" ");
+// console.log("======================================");
+// console.log(" ");
+// const owner = await getOwner("dionysone");
+// console.log(owner);
+// console.log(" ");
+// console.log("======================================");
+// console.log(" ");
+// await withdraw();
+// console.log(" ");
+// console.log("======================================");
+// console.log(" ");
