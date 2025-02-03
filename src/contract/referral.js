@@ -12,6 +12,11 @@ const contractJson = getJsonABI('Referral.sol/Referral.json');
 const contractAbi = contractJson.abi;
 const contractInteraction = new ethers.Contract(contractAddress, contractAbi, mainWallet);
 
+const referralContract = contractInteraction;
+const referralContractAddress = contractAddress;
+
+export { referralContract, referralContractAddress };
+
 async function reffAddRewardTokens(amount) {
     const rewardAmount = ethers.utils.parseUnits(amount.toString(), 18);
 
