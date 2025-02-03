@@ -46,12 +46,12 @@ async function main() {
 
     const NameService = await hre.ethers.getContractFactory('NameService');
     const nameService = await NameService.deploy();
-    console.log(`NameS ervice deployed to: ${nameService.address}`);
+    console.log(`Name Service deployed to: ${nameService.address}`);
 }
 
 main()
     .then(() => process.exit(0))
     .catch((error) => {
-        console.error(error);
+        console.error('❌ Deployment failed:', error);
         process.exit(1);
     });
