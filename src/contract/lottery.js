@@ -126,7 +126,7 @@ export async function getLeaderboard() {
 }
 
 export async function burnNft(wallet, tokenId = 0) {
-    console.log(`🤖 Processing: Burning NFTs`);
+    console.log(`🤖 Processing: NFT Burn`);
     console.log(`⏳ Current Time: ${new Date().toString()}`);
     const spinner = ora('Loading...').start();
 
@@ -156,7 +156,7 @@ export async function burnNft(wallet, tokenId = 0) {
     }
 }
 
-export async function withdrawTokens(wallet) {
+export async function withdraw(wallet) {
     console.log(`🤖 Processing: Spin Rewards Withdrawal`);
     console.log(`⏳ Current Time: ${new Date().toString()}`);
     const spinner = ora('Loading...').start();
@@ -229,7 +229,7 @@ export async function withdrawTokens(wallet) {
 // console.log(" ");
 // console.log("======================================");
 // console.log(" ");
-// await withdrawTokens(mainWallet);
+// await withdraw(mainWallet);
 // console.log(" ");
 // console.log("======================================");
 // console.log(" ");
