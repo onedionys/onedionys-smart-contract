@@ -17,36 +17,84 @@ const nameServiceContractAddress = contractAddress;
 
 export { nameServiceContract, nameServiceContractAddress };
 
-async function nameServiceRegister(wallet, name) {
-    const walletInstance = new ethers.Wallet(wallet.privateKey, provider);
+export async function register(wallet, name = 'onedionys') {
+    console.log(`🤖 Processing: Name Service Registration`);
+    console.log(`⏳ Current Time: ${new Date().toString()}`);
+    const spinner = ora('Loading...').start();
 
-    const tx = await nameServiceContract.connect(walletInstance).registerName(name, {
-        value: ethers.utils.parseUnits('20', 18),
-    });
-    await tx.wait();
-    console.log('User registered successfully!');
-}
+    try {
+        const amount = ethers.utils.parseUnits('20', 18);
+        const amountFee = parseFloat(ethers.utils.formatUnits(amount, 18));
+        const amountFeeFormatted = amountFee.toLocaleString('en-US');
 
-async function nameServiceGetName(address) {
-    const name = await nameServiceContract.getName(address);
-    if (name === '') {
-        console.log(`No name registered for address: ${address}`);
-    } else {
-        console.log(`Name registered for address ${address}: ${name}`);
+        const connectWallet = contractInteraction.connect(wallet);
+
+        const transaction = await connectWallet.registerName(name, {
+            value: amount
+        });
+        const receipt = await transaction.wait();
+
+        await addActivity(
+            wallet.address,
+            'Name Service Registration',
+            `Register a name service (${name}.chai) for ${amountFeeFormatted} tokens.`,
+            amountFee,
+            receipt.transactionHash,
+        );
+        spinner.stop();
+
+        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
+        console.log(`✅ Successfully registered a name service with the name ${name}.chai`);
+    } catch (error) {
+        spinner.stop();
+        console.log(`❌ An error occurred while registering the name service: ${getErrorMessage(error)}`);
     }
 }
 
-async function nameServiceGetOwner(name) {
-    const owner = await nameServiceContract.getOwner(name);
-    if (owner === '') {
-        console.log(`No owner registered for name: ${name}`);
-    } else {
-        console.log(`Owner registered for name ${name}: ${owner}`);
+export async function getName(address = '') {
+    const spinner = ora('Loading...').start();
+
+    try {
+        const name = await contractInteraction.getName(address);
+        spinner.stop();
+
+        return name === '' ? null : name;
+    } catch (error) {
+        spinner.stop();
+        console.log(`❌ An error occurred while getting the users service name: ${getErrorMessage(error)}`);
+        return null;
     }
 }
 
-async function nameServiceWithdraw() {
-    const tx = await nameServiceContract.withdrawFunds();
-    console.log('Transaction sent:', tx.hash);
-    await tx.wait();
+export async function getOwner(name = 'onedionys') {
+    const spinner = ora('Loading...').start();
+
+    try {
+        const owner = await contractInteraction.getOwner(name);
+        spinner.stop();
+
+        return owner === '' ? null : owner;
+    } catch (error) {
+        spinner.stop();
+        console.log(`❌ An error occurred while getting the users service name: ${getErrorMessage(error)}`);
+        return null;
+    }
+}
+
+export async function withdraw() {
+    console.log(`🤖 Processing: Name Service Withdrawal`);
+    console.log(`⏳ Current Time: ${new Date().toString()}`);
+    const spinner = ora('Loading...').start();
+
+    try {
+        const transaction = await contractInteraction.withdrawFunds();
+        const receipt = await transaction.wait();
+        spinner.stop();
+
+        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
+        console.log(`✅ Successfully withdraw all tokens from the name service contract`);
+    } catch (error) {
+        spinner.stop();
+        console.log(`❌ An error occurred while withdrawing all tokens: ${getErrorMessage(error)}`);
+    }
 }
