@@ -12,6 +12,11 @@ const contractJson = getJsonABI('NameService.sol/NameService.json');
 const contractAbi = contractJson.abi;
 const contractInteraction = new ethers.Contract(contractAddress, contractAbi, mainWallet);
 
+const nameServiceContract = contractInteraction;
+const nameServiceContractAddress = contractAddress;
+
+export { nameServiceContract, nameServiceContractAddress };
+
 async function nameServiceRegister(wallet, name) {
     const walletInstance = new ethers.Wallet(wallet.privateKey, provider);
 
