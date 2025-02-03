@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 import process from 'process';
 import ora from 'ora';
 import { getErrorMessage, getJsonABI } from './../utils.js';
-import { addActivity } from './leaderboard.js';
+import { lotteryContract } from './lottery.js';
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
@@ -12,8 +12,28 @@ const contractJson = getJsonABI('NFTCollection.sol/NFTCollection.json');
 const contractAbi = contractJson.abi;
 const contractInteraction = new ethers.Contract(contractAddress, contractAbi, mainWallet);
 
-async function setLotteryContract() {
-    const tx = await nftCollectionContract.setLotteryContract(lotteryContractAddress);
+const nftCollectionContract = contractInteraction;
+const nftCollectionContractAddress = contractAddress;
+
+export { nftCollectionContract, nftCollectionContractAddress };
+
+export async function setLotteryContract() {
+    console.log(`🤖 Processing: Initializing a Lottery Contract`);
+    console.log(`⏳ Current Time: ${new Date().toString()}`);
+    const spinner = ora('Loading...').start();
+
+    try {
+        const transaction = await contractInteraction.setLotteryContract(amount);
+        const receipt = await transaction.wait();
+        spinner.stop();
+
+        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
+        console.log(`✅ Successfully added a lottery prize of ${amountRewardsFormatted} tokens.`);
+    } catch (error) {
+        spinner.stop();
+        console.log(`❌ An error occurred while adding a lottery prize: ${getErrorMessage(error)}`);
+    }
+    const tx = await contractInteraction.setLotteryContract(lotteryContractAddress);
     await tx.wait();
     console.log('Lottery contract set successfully in NFTCollection contract.');
 }
