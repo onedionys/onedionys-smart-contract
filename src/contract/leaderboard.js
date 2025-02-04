@@ -20,6 +20,8 @@ export async function addActivity(address = '', title = '', description = '', am
     const spinner = ora('Loading...').start();
 
     try {
+        amount = ethers.utils.parseUnits(amount.toString(), 18);
+
         const transaction = await contractInteraction.addActivity(address, title, description, amount, transactionHash);
         await transaction.wait();
         spinner.stop();
