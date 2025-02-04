@@ -77,7 +77,6 @@ export async function joinQuiz(wallet) {
         );
     } catch (error) {
         spinner.stop();
-        console.log(error);
         console.log(`❌ An error occurred when trying to join the quiz: ${getErrorMessage(error)}`);
     }
 }
@@ -146,7 +145,6 @@ export async function claimQuizRewards(wallet) {
         );
     } catch (error) {
         spinner.stop();
-        console.log(error);
         console.log(`❌ An error occurred while claiming the quiz prize: ${getErrorMessage(error)}`);
     }
 }
