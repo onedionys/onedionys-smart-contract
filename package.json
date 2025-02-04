@@ -1,7 +1,7 @@
 {
-    "name": "dionyshub-smart-contract",
+    "name": "onedionys-dapp",
     "version": "1.0.0",
-    "description": "DionysHub Smart Contract powers a decentralized platform with token faucets, staking, AI-powered quizzes, and lottery games, using One Dionys Token (ODT) and Tea Token.",
+    "description": "Onedionys Dapp powers a decentralized platform with token faucets, staking, AI-powered quizzes, and lottery games, using One Dionys Token (ODT) and Tea Token.",
     "main": "index.js",
     "type": "module",
     "scripts": {
@@ -13,10 +13,10 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/onedionys/dionyshub-smart-contract.git"
+        "url": "git+https://github.com/onedionys/onedionys-dapp.git"
     },
     "keywords": [
-        "dionyshub",
+        "onedionys-dapp",
         "smart-contract",
         "one-dionys-token",
         "onedionys",
@@ -31,9 +31,9 @@
     "author": "One Dionys",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/onedionys/dionyshub-smart-contract/issues"
+        "url": "https://github.com/onedionys/onedionys-dapp/issues"
     },
-    "homepage": "https://github.com/onedionys/dionyshub-smart-contract#readme",
+    "homepage": "https://github.com/onedionys/onedionys-dapp#readme",
     "devDependencies": {
         "@eslint/js": "^9.17.0",
         "@jsdevtools/npm-publish": "^3.1.1",
@@ -111,10 +111,8 @@
         "nodemon": "^3.1.0",
         "ora": "^8.0.1",
         "path": "^0.12.7",
-        "playwright-chromium": "^1.42.1",
         "process": "^0.11.10",
         "prompts": "^2.4.2",
-        "puppeteer": "^24.1.0",
         "random-words": "^2.0.1",
         "readline": "^1.3.0",
         "readline-sync": "^1.4.10",
