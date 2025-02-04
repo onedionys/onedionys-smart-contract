@@ -161,9 +161,7 @@ export async function withdraw(wallet) {
     const spinner = ora('Loading...').start();
 
     try {
-        const iface = new ethers.utils.Interface([
-            'event Withdraw(address indexed user, uint256 points)',
-        ]);
+        const iface = new ethers.utils.Interface(['event Withdraw(address indexed user, uint256 points)']);
 
         const connectWallet = contractInteraction.connect(wallet);
 
