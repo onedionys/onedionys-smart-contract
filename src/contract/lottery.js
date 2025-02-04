@@ -37,7 +37,7 @@ export async function addRewardsLottery(amount = 0) {
         spinner.stop();
 
         console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
-        console.log(`✅ Successfully added a lottery prize of ${amountRewardsFormatted} tokens.`);
+        console.log(`✅ Successfully added a lottery prize of ${amountRewardsFormatted} tokens`);
     } catch (error) {
         spinner.stop();
         console.log(`❌ An error occurred while adding a lottery prize: ${getErrorMessage(error)}`);
@@ -97,7 +97,7 @@ export async function spinWheel(wallet) {
 
         console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
         console.log(
-            `✅ Successfully spin the wheel and won 1 ${rarityNft} NFT (worth ${amountPointsFormatted}), costing ${amountSpinFormatted} tokens.`,
+            `✅ Successfully spin the wheel and won 1 ${rarityNft} NFT (worth ${amountPointsFormatted}), costing ${amountSpinFormatted} tokens`,
         );
     } catch (error) {
         spinner.stop();
