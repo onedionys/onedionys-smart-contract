@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import process from 'process';
 import ora from 'ora';
 import { getErrorMessage, getJsonABI } from './../utils.js';
+import { tokenContract } from './token.js';
 import { addActivity } from './leaderboard.js';
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
@@ -17,19 +18,32 @@ const referralContractAddress = contractAddress;
 
 export { referralContract, referralContractAddress };
 
-async function reffAddRewardTokens(amount) {
-    const rewardAmount = ethers.utils.parseUnits(amount.toString(), 18);
+export async function addRewardsReferral(amount) {
+    console.log(`🤖 Processing: Add Rewards Referral`);
+    console.log(`⏳ Current Time: ${new Date().toString()}`);
+    const spinner = ora('Loading...').start();
 
-    const approveTx = await tokenContract.approve(referralContractAddress, rewardAmount);
-    await approveTx.wait();
-    console.log(`Approved ${amount} token for reward pool.`);
+    try {
+        amount = ethers.utils.parseUnits(amount.toString(), 18);
+        const amountRewards = parseFloat(ethers.utils.formatUnits(amount, 18));
+        const amountRewardsFormatted = amountRewards.toLocaleString('en-US');
 
-    const addRewardTx = await referralContract.addRewardTokens(rewardAmount);
-    await addRewardTx.wait();
-    console.log(`Added ${amount} token as reward tokens.`);
+        const approveTransaction = await tokenContract.approve(contractAddress, amount);
+        await approveTransaction.wait();
+
+        const transaction = await contractInteraction.addRewardTokens(amount);
+        const receipt = await transaction.wait();
+        spinner.stop();
+
+        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
+        console.log(`✅ Successfully added a referral prize of ${amountRewardsFormatted} tokens.`);
+    } catch (error) {
+        spinner.stop();
+        console.log(`❌ An error occurred while adding a referral prize: ${getErrorMessage(error)}`);
+    }
 }
 
-async function reffRegister(wallet, referrer) {
+export async function register(wallet, referrer) {
     const walletInstance = new ethers.Wallet(wallet.privateKey, provider);
 
     const tx = await referralContract.connect(walletInstance).register(referrer);
@@ -37,7 +51,7 @@ async function reffRegister(wallet, referrer) {
     console.log('User registered successfully!');
 }
 
-async function reffGetLeaderboard() {
+export async function getLeaderboard() {
     const [leaderboardAddresses, leaderboardCounts] = await referralContract.getLeaderboard();
     console.log('Leaderboard:');
     leaderboardAddresses.forEach((address, index) => {
@@ -45,12 +59,14 @@ async function reffGetLeaderboard() {
     });
 }
 
-async function reffGetReferralDetails(wallet) {
+export async function getDetails(wallet) {
     const referralDetails = await referralContract.getReferralDetails(wallet.address);
     console.log('Referral details:', referralDetails);
 }
 
-async function reffGetUserDetails(wallet) {
+export async function gtUserDetails(wallet) {
     const [referralsCount, registrationTime] = await referralContract.getUserDetails(wallet.address);
     console.log(`Referrals Count: ${referralsCount}, Registration Time: ${registrationTime}`);
 }
+
+await addRewardsReferral(100);
