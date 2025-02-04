@@ -37,7 +37,7 @@ export async function addRewardsReferral(amount = 0) {
         spinner.stop();
 
         console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
-        console.log(`✅ Successfully added a referral prize of ${amountRewardsFormatted} tokens.`);
+        console.log(`✅ Successfully added a referral prize of ${amountRewardsFormatted} tokens`);
     } catch (error) {
         spinner.stop();
         console.log(`❌ An error occurred while adding a referral prize: ${getErrorMessage(error)}`);
@@ -66,7 +66,7 @@ export async function register(wallet, referrer) {
 
         console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
         console.log(
-            `✅ Successful registration using referral.`,
+            `✅ Successful registration using referral`,
         );
     } catch (error) {
         spinner.stop();
