@@ -54,16 +54,3 @@ export async function getNFTDetails(tokenId = 0) {
         return null;
     }
 }
-
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await setLotteryContract();
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// const nft = await getNFTDetails(0);
-// console.log(nft);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
