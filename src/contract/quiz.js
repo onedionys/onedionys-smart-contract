@@ -142,23 +142,3 @@ export async function claimQuizRewards(wallet) {
         console.log(`❌ An error occurred while claiming the quiz prize: ${getErrorMessage(error)}`);
     }
 }
-
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await addRewardsQuiz(100);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await joinQuiz(mainWallet);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await submitAnswer(mainWallet, true);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await claimQuizRewards(mainWallet);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
