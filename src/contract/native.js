@@ -159,28 +159,3 @@ export async function withdraw(amount = 0) {
         console.log(`❌ An error occurred while withdrawing tokens: ${getErrorMessage(error)}`);
     }
 }
-
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await deposit(1);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// const balance = await getBalance();
-// console.log(balance);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await claimFaucet(mainWallet);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await donate(mainWallet, 1);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await withdraw(balance);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
