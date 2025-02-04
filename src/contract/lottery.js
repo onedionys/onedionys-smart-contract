@@ -54,7 +54,7 @@ export async function spinWheel(wallet) {
             'event SpinWheel(address indexed user, string rarity, uint256 points, string cid)',
         ]);
 
-        const amount = ethers.utils.parseUnits('1', 18);
+        const amount = ethers.utils.parseUnits('10', 18);
         const amountSpin = parseFloat(ethers.utils.formatUnits(amount, 18));
         const amountSpinFormatted = amountSpin.toLocaleString('en-US');
 
