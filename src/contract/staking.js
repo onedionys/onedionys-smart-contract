@@ -4,7 +4,6 @@ import ora from 'ora';
 import { getErrorMessage, getJsonABI } from './../utils.js';
 import { addActivity } from './leaderboard.js';
 import { tokenContract } from './token.js';
-import delay from 'delay';
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
@@ -163,26 +162,22 @@ export async function withdraw(wallet) {
     }
 }
 
-console.log(' ');
-console.log('======================================');
-console.log(' ');
-await addRewardsStaking(100);
-console.log(' ');
-console.log('======================================');
-console.log(' ');
-await stake(mainWallet, 1);
-console.log(' ');
-console.log('======================================');
-console.log(' ');
-await delay(60000);
-console.log(' ');
-console.log('======================================');
-console.log(' ');
-await unstake(mainWallet, 1);
-console.log(' ');
-console.log('======================================');
-console.log(' ');
-await withdraw(mainWallet);
-console.log(' ');
-console.log('======================================');
-console.log(' ');
+// console.log(' ');
+// console.log('======================================');
+// console.log(' ');
+// await addRewardsStaking(100);
+// console.log(' ');
+// console.log('======================================');
+// console.log(' ');
+// await stake(mainWallet, 1);
+// console.log(' ');
+// console.log('======================================');
+// console.log(' ');
+// await unstake(mainWallet, 1);
+// console.log(' ');
+// console.log('======================================');
+// console.log(' ');
+// await withdraw(mainWallet);
+// console.log(' ');
+// console.log('======================================');
+// console.log(' ');
