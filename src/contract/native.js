@@ -17,7 +17,7 @@ const nativeContractAddress = contractAddress;
 
 export { nativeContract, nativeContractAddress };
 
-export async function deposit(amount) {
+export async function deposit(amount = 0) {
     console.log(`🤖 Processing: Deposit Native Token`);
     console.log(`⏳ Current Time: ${new Date().toString()}`);
     const spinner = ora('Loading...').start();
@@ -104,7 +104,7 @@ export async function claimFaucet(wallet) {
     }
 }
 
-export async function donate(wallet, amount) {
+export async function donate(wallet, amount = 0) {
     console.log(`🤖 Processing: Donate Native Token`);
     console.log(`⏳ Current Time: ${new Date().toString()}`);
     const spinner = ora('Loading...').start();
@@ -138,7 +138,7 @@ export async function donate(wallet, amount) {
     }
 }
 
-export async function withdraw(amount) {
+export async function withdraw(amount = 0) {
     console.log(`🤖 Processing: Native Withdrawal`);
     console.log(`⏳ Current Time: ${new Date().toString()}`);
     const spinner = ora('Loading...').start();
