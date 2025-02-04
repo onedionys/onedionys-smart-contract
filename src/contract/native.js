@@ -34,7 +34,7 @@ export async function deposit(amount = 0) {
         spinner.stop();
 
         console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
-        console.log(`✅ Successfully deposited ${amountPoolFormatted} tokens as a reward.`);
+        console.log(`✅ Successfully deposited ${amountPoolFormatted} tokens as a reward`);
     } catch (error) {
         spinner.stop();
         console.log(`❌ An error occurred while depositing tokens: ${getErrorMessage(error)}`);
@@ -131,7 +131,7 @@ export async function donate(wallet, amount = 0) {
         spinner.stop();
 
         console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
-        console.log(`✅ Successfully donated ${amountDonatedFormatted} tokens to a native contract.`);
+        console.log(`✅ Successfully donated ${amountDonatedFormatted} tokens to a native contract`);
     } catch (error) {
         spinner.stop();
         console.log(`❌ An error occurred while making a token donation: ${getErrorMessage(error)}`);
