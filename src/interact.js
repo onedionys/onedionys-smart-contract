@@ -7,7 +7,10 @@ import {
     claimFaucet as tkClaimFaucet,
     burnToken as tkBurnToken,
 } from './contract/token.js';
-import { setLotteryContract as ncSetLotteryContract, getNFTDetails as ncGetNFTDetails } from './contract/nftCollection.js';
+import {
+    setLotteryContract as ncSetLotteryContract,
+    getNFTDetails as ncGetNFTDetails,
+} from './contract/nftCollection.js';
 import {
     addRewardsLottery as ltAddRewardsLottery,
     spinWheel as ltSpinWheel,
