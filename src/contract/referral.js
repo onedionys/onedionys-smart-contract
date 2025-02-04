@@ -19,7 +19,7 @@ const referralContractAddress = contractAddress;
 
 export { referralContract, referralContractAddress };
 
-export async function addRewardsReferral(amount) {
+export async function addRewardsReferral(amount = 0) {
     console.log(`🤖 Processing: Add Rewards Referral`);
     console.log(`⏳ Current Time: ${new Date().toString()}`);
     const spinner = ora('Loading...').start();
