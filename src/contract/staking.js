@@ -161,23 +161,3 @@ export async function withdraw(wallet) {
         console.log(`❌ An error occurred when claiming a staking reward: ${getErrorMessage(error)}`);
     }
 }
-
-// console.log(' ');
-// console.log('======================================');
-// console.log(' ');
-// await addRewardsStaking(100);
-// console.log(' ');
-// console.log('======================================');
-// console.log(' ');
-// await stake(mainWallet, 1);
-// console.log(' ');
-// console.log('======================================');
-// console.log(' ');
-// await unstake(mainWallet, 1);
-// console.log(' ');
-// console.log('======================================');
-// console.log(' ');
-// await withdraw(mainWallet);
-// console.log(' ');
-// console.log('======================================');
-// console.log(' ');
