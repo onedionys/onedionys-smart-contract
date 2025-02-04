@@ -3,6 +3,8 @@ import process from 'process';
 import ora from 'ora';
 import { getErrorMessage, getJsonABI } from './../utils.js';
 import { addActivity } from './leaderboard.js';
+import { tokenContract } from './token.js';
+import delay from 'delay';
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
@@ -17,79 +19,172 @@ const stakingContractAddress = contractAddress;
 
 export { stakingContract, stakingContractAddress };
 
-async function addRewardTokensStaking(amount) {
-    const rewardAmount = ethers.utils.parseUnits(amount.toString(), 18);
+export async function addRewardsStaking(amount) {
+    console.log(`🤖 Processing: Add Rewards Staking`);
+    console.log(`⏳ Current Time: ${new Date().toString()}`);
+    const spinner = ora('Loading...').start();
 
-    const approveTx = await tokenContract.approve(stakingContractAddress, rewardAmount);
-    await approveTx.wait();
-    console.log(`Approved ${amount} token for reward pool.`);
+    try {
+        amount = ethers.utils.parseUnits(amount.toString(), 18);
+        const amountRewards = parseFloat(ethers.utils.formatUnits(amount, 18));
+        const amountRewardsFormatted = amountRewards.toLocaleString('en-US');
 
-    const addRewardTx = await stakingContract.addRewardTokens(rewardAmount);
-    await addRewardTx.wait();
-    console.log(`Added ${amount} token as reward tokens.`);
+        const approveTransaction = await tokenContract.approve(contractAddress, amount);
+        await approveTransaction.wait();
+
+        const transaction = await contractInteraction.addRewardTokens(amount);
+        const receipt = await transaction.wait();
+        spinner.stop();
+
+        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
+        console.log(`✅ Successfully added a staking prize of ${amountRewardsFormatted} tokens`);
+    } catch (error) {
+        spinner.stop();
+        console.log(`❌ An error occurred while adding a staking prize: ${getErrorMessage(error)}`);
+    };
 }
 
-async function stakeToken(wallet, amount) {
-    const walletInstance = new ethers.Wallet(wallet.privateKey, provider);
-    const stakeAmount = ethers.utils.parseUnits(amount.toString(), 18);
+export async function stake(wallet, amount) {
+    console.log(`🤖 Processing: Token Staking`);
+    console.log(`⏳ Current Time: ${new Date().toString()}`);
+    const spinner = ora('Loading...').start();
 
-    const approveTx = await tokenContract.connect(walletInstance).approve(stakingContractAddress, stakeAmount);
-    await approveTx.wait();
-    console.log(`Approved ${amount} token for staking contract by ${wallet.address}`);
+    try {
+        amount = ethers.utils.parseUnits(amount.toString(), 18);
+        const amountStaked = parseFloat(ethers.utils.formatUnits(amount, 18));
+        const amountStakedFormatted = amountStaked.toLocaleString('en-US');
 
-    const stakingTx = await stakingContract.connect(walletInstance).stake(stakeAmount);
-    const receipt = await stakingTx.wait();
-    const txHash = receipt.transactionHash;
+        const connectTokenWallet = tokenContract.connect(wallet);
+        const connectWallet = contractInteraction.connect(wallet);
 
-    const addActivityTx = await leaderboardContract.addActivity(
-        wallet.address,
-        'Stake Token',
-        'Users stake token',
-        amount,
-        txHash,
-    );
-    await addActivityTx.wait();
-    console.log(`Staked ${amount} token by ${wallet.address}`);
+        const approveTransaction = await connectTokenWallet.approve(contractAddress, amount);
+        await approveTransaction.wait();
+
+        const transaction = await connectWallet.stake(amount);
+        const receipt = await transaction.wait();
+
+        await addActivity(
+            wallet.address,
+            'Token Staking',
+            `Staked ${amountStakedFormatted} tokens to earn rewards.`,
+            amountStaked,
+            receipt.transactionHash,
+        );
+        spinner.stop();
+
+        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
+        console.log(`✅ Successfully stake ${amountStakedFormatted} tokens`);
+    } catch (error) {
+        spinner.stop();
+        console.log(`❌ An error occurred while staking the token: ${getErrorMessage(error)}`);
+    }
 }
 
-async function unstakeToken(wallet, amount) {
-    const walletInstance = new ethers.Wallet(wallet.privateKey, provider);
-    const stakeAmount = ethers.utils.parseUnits(amount.toString(), 18);
+export async function unstake(wallet, amount) {
+    console.log(`🤖 Processing: Unstake Tokens`);
+    console.log(`⏳ Current Time: ${new Date().toString()}`);
+    const spinner = ora('Loading...').start();
 
-    const approveTx = await tokenContract.connect(walletInstance).approve(stakingContractAddress, stakeAmount);
-    await approveTx.wait();
-    console.log(`Approved ${amount} token for unstaking contract by ${wallet.address}`);
+    try {
+        amount = ethers.utils.parseUnits(amount.toString(), 18);
+        const amountUnstaked = parseFloat(ethers.utils.formatUnits(amount, 18));
+        const amountUnstakedFormatted = amountUnstaked.toLocaleString('en-US');
 
-    const unstakingTx = await stakingContract.connect(walletInstance).unstake(stakeAmount);
-    const receipt = await unstakingTx.wait();
-    const txHash = receipt.transactionHash;
+        const connectTokenWallet = tokenContract.connect(wallet);
+        const connectWallet = contractInteraction.connect(wallet);
 
-    const addActivityTx = await leaderboardContract.addActivity(
-        wallet.address,
-        'Unstake Token',
-        'Users unstake token',
-        amount,
-        txHash,
-    );
-    await addActivityTx.wait();
+        const approveTransaction = await connectTokenWallet.approve(contractAddress, amount);
+        await approveTransaction.wait();
 
-    console.log(`Unstaked ${amount} token by ${wallet.address}`);
+        const transaction = await connectWallet.unstake(amount);
+        const receipt = await transaction.wait();
+
+        await addActivity(
+            wallet.address,
+            'Unstake Tokens',
+            `Unstaked ${amountUnstakedFormatted} tokens.`,
+            amountUnstaked,
+            receipt.transactionHash,
+        );
+        spinner.stop();
+
+        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
+        console.log(`✅ Successfully unstake ${amountUnstakedFormatted} tokens`);
+    } catch (error) {
+        spinner.stop();
+        console.log(`❌ An error occurred while unstaking the token: ${getErrorMessage(error)}`);
+    }
 }
 
-async function claimRewards(wallet) {
-    const walletInstance = new ethers.Wallet(wallet.privateKey, provider);
+export async function withdraw(wallet) {
+    console.log(`🤖 Processing: Staking Rewards Claim`);
+    console.log(`⏳ Current Time: ${new Date().toString()}`);
+    const spinner = ora('Loading...').start();
 
-    const tx = await stakingContract.connect(walletInstance).claimRewards();
-    const receipt = await tx.wait();
-    const txHash = receipt.transactionHash;
+    try {
+        const iface = new ethers.utils.Interface([
+            'event RewardsClaimed(address indexed user, uint256 reward)',
+        ]);
 
-    const addActivityTx = await leaderboardContract.addActivity(
-        wallet.address,
-        'Claim Rewards Token',
-        'Users claim rewards token',
-        1000,
-        txHash,
-    );
-    await addActivityTx.wait();
-    console.log(`Rewards claimed by ${wallet.address}`);
+        const connectWallet = contractInteraction.connect(wallet);
+
+        const transaction = await connectWallet.claimRewards();
+        const receipt = await transaction.wait();
+
+        let amountRewards = 0;
+
+        receipt.logs.some((log) => {
+            try {
+                const parsedLog = iface.parseLog(log);
+                if (parsedLog.name === 'RewardsClaimed') {
+                    amountRewards = parseFloat(ethers.utils.formatUnits(parsedLog.args.reward.toString(), 18));
+                    return true;
+                }
+            } catch (e) {
+                void e;
+            }
+            return false;
+        });
+
+        const amountRewardsFormatted = amountRewards.toLocaleString('en-US');
+
+        await addActivity(
+            wallet.address,
+            'Staking Rewards Claim',
+            `Claimed ${amountRewardsFormatted} tokens from staking rewards.`,
+            amountRewards,
+            receipt.transactionHash,
+        );
+        spinner.stop();
+
+        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
+        console.log(`✅ Successfully claimed ${amountRewardsFormatted} tokens from staking rewards`);
+    } catch (error) {
+        spinner.stop();
+        console.log(`❌ An error occurred when claiming a staking reward: ${getErrorMessage(error)}`);
+    }
 }
+
+console.log(" ");
+console.log("======================================");
+console.log(" ");
+await addRewardsStaking(100);
+console.log(" ");
+console.log("======================================");
+console.log(" ");
+await stake(mainWallet, 1);
+console.log(" ");
+console.log("======================================");
+console.log(" ");
+await delay(60000);
+console.log(" ");
+console.log("======================================");
+console.log(" ");
+await unstake(mainWallet, 1);
+console.log(" ");
+console.log("======================================");
+console.log(" ");
+await withdraw(mainWallet);
+console.log(" ");
+console.log("======================================");
+console.log(" ");
