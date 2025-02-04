@@ -72,9 +72,7 @@ export async function joinQuiz(wallet) {
         spinner.stop();
 
         console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
-        console.log(
-            `✅ Successfully participated in the quiz challenge at the cost of ${amountJoinFormatted} token`,
-        );
+        console.log(`✅ Successfully participated in the quiz challenge at the cost of ${amountJoinFormatted} token`);
     } catch (error) {
         spinner.stop();
         console.log(`❌ An error occurred when trying to join the quiz: ${getErrorMessage(error)}`);
@@ -104,9 +102,7 @@ export async function claimQuizRewards(wallet) {
     const spinner = ora('Loading...').start();
 
     try {
-        const iface = new ethers.utils.Interface([
-            'event RewardsClaimed(address indexed user, uint256 reward)',
-        ]);
+        const iface = new ethers.utils.Interface(['event RewardsClaimed(address indexed user, uint256 reward)']);
 
         const connectWallet = contractInteraction.connect(wallet);
 
@@ -140,9 +136,7 @@ export async function claimQuizRewards(wallet) {
         spinner.stop();
 
         console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
-        console.log(
-            `✅ Successfully claimed ${amountRewardsFormatted} tokens earned from the quiz`,
-        );
+        console.log(`✅ Successfully claimed ${amountRewardsFormatted} tokens earned from the quiz`);
     } catch (error) {
         spinner.stop();
         console.log(`❌ An error occurred while claiming the quiz prize: ${getErrorMessage(error)}`);
