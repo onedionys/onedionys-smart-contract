@@ -62,6 +62,7 @@ import {
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 const userWallet = new ethers.Wallet(process.env.USER_PRIVATE_KEY, provider);
+const randomHash = ethers.utils.id(Math.random().toString());
 
 // Token Interaction
 console.log(' ');
@@ -185,16 +186,16 @@ await qzClaimQuizRewards(mainWallet);
 console.log(' ');
 console.log('======================================');
 console.log(' ');
-await nsRegister(mainWallet, 'dionysone');
+await nsRegister(mainWallet, 'rexus');
 console.log(' ');
 console.log('======================================');
 console.log(' ');
-const nameServiceName = await nsGetName('0xa276d7a3128ec6408162031b5088780ed2957da9');
+const nameServiceName = await nsGetName(mainWallet.address);
 console.log(nameServiceName);
 console.log(' ');
 console.log('======================================');
 console.log(' ');
-const nameServiceOwner = await nsGetOwner('dionysone');
+const nameServiceOwner = await nsGetOwner('rexus');
 console.log(nameServiceOwner);
 console.log(' ');
 console.log('======================================');
@@ -243,7 +244,7 @@ await tfUpdateFee(1);
 console.log(' ');
 console.log('======================================');
 console.log(' ');
-await tfCreateToken(mainWallet, 'Sajaddah Token', 'SJD', 1000);
+await tfCreateToken(mainWallet, 'Rexus Token', 'RXS', 1000000);
 console.log(' ');
 console.log('======================================');
 console.log(' ');
@@ -253,13 +254,7 @@ await tfWithdraw();
 console.log(' ');
 console.log('======================================');
 console.log(' ');
-await lbAddActivity(
-    '0xa276d7a3128ec6408162031b5088780ed2957da9',
-    'Token Burn',
-    'Burned 10 tokens.',
-    10,
-    '0x474655c7b63d40e76e35891bf47afba3d46ad59410ebef82cedc618135fb72b9',
-);
+await lbAddActivity(mainWallet.address, 'Token Burn', 'Burned 10 tokens.', 10, randomHash);
 console.log(' ');
 console.log('======================================');
 console.log(' ');
@@ -268,5 +263,5 @@ console.log(leaderboardUsers);
 console.log(' ');
 console.log('======================================');
 console.log(' ');
-const leaderboardActivities = await lbGetActivities('0xa276d7a3128ec6408162031b5088780ed2957da9');
+const leaderboardActivities = await lbGetActivities(mainWallet.address);
 console.log(leaderboardActivities);
