@@ -55,7 +55,7 @@ export async function updateFee(amount = 0) {
         spinner.stop();
 
         console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
-        console.log(`✅ Successfully converted the fee into ${amountFeeFormatted} tokens.`);
+        console.log(`✅ Successfully converted the fee into ${amountFeeFormatted} tokens`);
     } catch (error) {
         spinner.stop();
         console.log(`❌ An error occurred when changing the fee: ${getErrorMessage(error)}`);
