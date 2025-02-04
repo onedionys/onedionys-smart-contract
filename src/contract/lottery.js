@@ -4,7 +4,7 @@ import ora from 'ora';
 import { getErrorMessage, getJsonABI } from './../utils.js';
 import { addActivity } from './leaderboard.js';
 import { tokenContract } from './token.js';
-import { nftCollectionContract /* , setLotteryContract */ } from './nftCollection.js';
+import { nftCollectionContract } from './nftCollection.js';
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
@@ -201,32 +201,3 @@ export async function withdraw(wallet) {
         console.log(`❌ An error occurred while withdrawing all tokens: ${getErrorMessage(error)}`);
     }
 }
-
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await setLotteryContract();
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await addRewardsLottery(1000);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await spinWheel(mainWallet);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// const leaderboard = await getLeaderboard();
-// console.log(leaderboard);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await burnNft(mainWallet, 1);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await withdraw(mainWallet);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
