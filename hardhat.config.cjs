@@ -6,7 +6,7 @@ const process = require('process');
 
 module.exports = {
     solidity: {
-        version: '0.8.27',
+        version: '0.8.28',
         settings: {
             optimizer: {
                 enabled: true,
