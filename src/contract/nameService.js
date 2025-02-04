@@ -17,7 +17,7 @@ const nameServiceContractAddress = contractAddress;
 
 export { nameServiceContract, nameServiceContractAddress };
 
-export async function register(wallet, name = 'onedionys') {
+export async function register(wallet, name = '') {
     console.log(`🤖 Processing: Name Service Registration`);
     console.log(`⏳ Current Time: ${new Date().toString()}`);
     const spinner = ora('Loading...').start();
@@ -66,7 +66,7 @@ export async function getName(address = '') {
     }
 }
 
-export async function getOwner(name = 'onedionys') {
+export async function getOwner(name = '') {
     const spinner = ora('Loading...').start();
 
     try {
