@@ -3,7 +3,7 @@
     "version": 1,
     "newProjectRoot": "projects",
     "projects": {
-        "corporate": {
+        "onedionys": {
             "projectType": "application",
             "schematics": {
                 "@schematics/angular:component": {
@@ -17,7 +17,7 @@
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",
                     "options": {
-                        "outputPath": "dist/corporate",
+                        "outputPath": "dist/onedionys",
                         "index": "src/index.html",
                         "main": "src/main.ts",
                         "polyfills": ["zone.js"],
@@ -30,10 +30,10 @@
                             "node_modules/flatpickr/dist/flatpickr.css",
                             "src/styles.scss",
                             "node_modules/@ctrl/ngx-emoji-mart/picker.css",
-                            "src/assets/scss/config/corporate/bootstrap.scss",
+                            "src/assets/scss/config/onedionys/bootstrap.scss",
                             "node_modules/slick-carousel/slick/slick.scss",
                             "node_modules/slick-carousel/slick/slick-theme.scss",
-                            "src/assets/scss/config/corporate/app.scss",
+                            "src/assets/scss/config/onedionys/app.scss",
                             "src/assets/scss/icons.scss"
                         ],
                         "scripts": [
@@ -112,10 +112,10 @@
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "configurations": {
                         "production": {
-                            "buildTarget": "corporate:build:production"
+                            "buildTarget": "onedionys:build:production"
                         },
                         "development": {
-                            "buildTarget": "corporate:build:development"
+                            "buildTarget": "onedionys:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -123,7 +123,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "buildTarget": "corporate:build"
+                        "buildTarget": "onedionys:build"
                     }
                 },
                 "test": {
