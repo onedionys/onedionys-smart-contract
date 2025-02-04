@@ -101,7 +101,6 @@ export async function spinWheel(wallet) {
         );
     } catch (error) {
         spinner.stop();
-        console.log(error);
         console.log(`❌ An error occurred while turning the wheel: ${getErrorMessage(error)}`);
     }
 }
