@@ -134,12 +134,33 @@ export async function getUserDetails(wallet) {
     }
 }
 
+// console.log(" ");
+// console.log("======================================");
+// console.log(" ");
 // await addRewardsReferral(100);
+// console.log(" ");
+// console.log("======================================");
+// console.log(" ");
 // await register(mainWallet, ethers.constants.AddressZero);
+// console.log(" ");
+// console.log("======================================");
+// console.log(" ");
 // await register(userWallet, mainWallet.address);
+// console.log(" ");
+// console.log("======================================");
+// console.log(" ");
 // const leaderboard = await getLeaderboard();
 // console.log(leaderboard);
+// console.log(" ");
+// console.log("======================================");
+// console.log(" ");
 // const details = await getDetails(mainWallet);
 // console.log(details);
+// console.log(" ");
+// console.log("======================================");
+// console.log(" ");
 // const user = await getUserDetails(mainWallet);
 // console.log(user);
+// console.log(" ");
+// console.log("======================================");
+// console.log(" ");
