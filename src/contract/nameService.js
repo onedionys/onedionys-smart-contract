@@ -30,7 +30,7 @@ export async function register(wallet, name = '') {
         const connectWallet = contractInteraction.connect(wallet);
 
         const transaction = await connectWallet.registerName(name, {
-            value: amount
+            value: amount,
         });
         const receipt = await transaction.wait();
 
