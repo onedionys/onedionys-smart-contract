@@ -46,7 +46,7 @@ export async function getNFTDetails(tokenId = 0) {
             tokenId: tokenId,
             rarity: rarity,
             points: points.toNumber(),
-            cid: cid
+            cid: cid,
         };
     } catch (error) {
         spinner.stop();
