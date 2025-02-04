@@ -23,7 +23,7 @@ export async function register(wallet, name = '') {
     const spinner = ora('Loading...').start();
 
     try {
-        const amount = ethers.utils.parseUnits('1', 18);
+        const amount = ethers.utils.parseUnits('20', 18);
         const amountFee = parseFloat(ethers.utils.formatUnits(amount, 18));
         const amountFeeFormatted = amountFee.toLocaleString('en-US');
 
