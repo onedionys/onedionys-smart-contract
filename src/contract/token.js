@@ -6,7 +6,6 @@ import { addActivity } from './leaderboard.js';
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
-// const userWallet = new ethers.Wallet(process.env.USER_PRIVATE_KEY, provider);
 
 const contractAddress = process.env.TOKEN_CONTRACT_ADDRESS;
 const contractJson = getJsonABI('Token.sol/Token.json');
@@ -121,19 +120,3 @@ export async function burnToken(wallet, amount = 0) {
         console.log(`❌ An error occurred while burning the token: ${getErrorMessage(error)}`);
     }
 }
-
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await transferTea(userWallet, 1);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await claimFaucet(mainWallet);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await burnToken(mainWallet, 1);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
