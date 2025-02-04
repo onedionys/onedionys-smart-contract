@@ -25,12 +25,12 @@ export async function getDetails() {
         const owner = await contractInteraction.owner();
 
         spinner.stop();
-        if(typeof fee != "undefined" && typeof owner != "undefined") {
+        if (typeof fee != 'undefined' && typeof owner != 'undefined') {
             return {
                 fee: parseFloat(ethers.utils.formatUnits(fee, 18)),
-                owner: owner
-            }
-        }else {
+                owner: owner,
+            };
+        } else {
             return null;
         }
     } catch (error) {
@@ -104,9 +104,7 @@ export async function createToken(wallet, name = '', symbol = '', totalSupply = 
         spinner.stop();
 
         console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
-        console.log(
-            `✅ Successfully create a token with address ${tokenAddress}`,
-        );
+        console.log(`✅ Successfully create a token with address ${tokenAddress}`);
     } catch (error) {
         spinner.stop();
         console.log(`❌ An error occurred while creating the token: ${getErrorMessage(error)}`);
@@ -131,23 +129,23 @@ export async function withdraw() {
     }
 }
 
-console.log(" ");
-console.log("======================================");
-console.log(" ");
+console.log(' ');
+console.log('======================================');
+console.log(' ');
 const details = await getDetails();
 console.log(details);
-console.log(" ");
-console.log("======================================");
-console.log(" ");
+console.log(' ');
+console.log('======================================');
+console.log(' ');
 await updateFee(1);
-console.log(" ");
-console.log("======================================");
-console.log(" ");
+console.log(' ');
+console.log('======================================');
+console.log(' ');
 await createToken(mainWallet, 'Sajaddah Token', 'SJD', 1000);
-console.log(" ");
-console.log("======================================");
-console.log(" ");
+console.log(' ');
+console.log('======================================');
+console.log(' ');
 await withdraw();
-console.log(" ");
-console.log("======================================");
-console.log(" ");
+console.log(' ');
+console.log('======================================');
+console.log(' ');
