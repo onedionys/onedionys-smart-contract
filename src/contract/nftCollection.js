@@ -51,7 +51,7 @@ export async function getNFTDetails(tokenId = 0) {
     } catch (error) {
         spinner.stop();
         console.log(`❌ An error occurred while getting the NFT details: ${getErrorMessage(error)}`);
-        return {};
+        return null;
     }
 }
 
