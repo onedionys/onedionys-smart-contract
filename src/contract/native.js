@@ -28,7 +28,7 @@ export async function deposit(amount = 0) {
         const amountPoolFormatted = amountPool.toLocaleString('en-US');
 
         const transaction = await contractInteraction.depositNative({
-            value: amount
+            value: amount,
         });
         const receipt = await transaction.wait();
         spinner.stop();
@@ -117,7 +117,7 @@ export async function donate(wallet, amount = 0) {
         const connectWallet = contractInteraction.connect(wallet);
 
         const transaction = await connectWallet.donate({
-            value: amount
+            value: amount,
         });
         const receipt = await transaction.wait();
 
