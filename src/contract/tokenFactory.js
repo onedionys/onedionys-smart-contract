@@ -11,40 +11,70 @@ const contractAddress = process.env.TOKEN_FACTORY_CONTRACT_ADDRESS;
 const contractJson = getJsonABI('TokenFactory.sol/TokenFactory.json');
 const contractAbi = contractJson.abi;
 const contractInteraction = new ethers.Contract(contractAddress, contractAbi, mainWallet);
-const userWallet = new ethers.Wallet(process.env.USER_PRIVATE_KEY, provider);
 
 const tokenFactoryContract = contractInteraction;
 const tokenFactoryContractAddress = contractAddress;
 
 export { tokenFactoryContract, tokenFactoryContractAddress };
 
-async function getDetails() {
-    const currentFee = await tokenFactoryContract.fee();
-    const ownerAddress = await tokenFactoryContract.owner();
-    console.log(`Current Fee: ${ethers.utils.formatUnits(currentFee, 18)} TEA`);
-    console.log(`Contract Owner: ${ownerAddress}`);
+export async function getDetails() {
+    const spinner = ora('Loading...').start();
+
+    try {
+        const fee = await contractInteraction.fee();
+        const owner = await contractInteraction.owner();
+
+        spinner.stop();
+        if(typeof fee != "undefined" && typeof owner != "undefined") {
+            return {
+                fee: parseFloat(ethers.utils.formatUnits(fee, 18)),
+                owner: owner
+            }
+        }else {
+            return null;
+        }
+    } catch (error) {
+        spinner.stop();
+        console.log(`❌ An error occurred while getting the contract details: ${getErrorMessage(error)}`);
+        return null;
+    }
 }
 
-async function updateFee(newFee) {
-    const feeAmount = ethers.utils.parseUnits(newFee.toString(), 18);
-    const tx = await tokenFactoryContract.updateFee(feeAmount);
-    await tx.wait();
-    console.log(`Updated factory fee to ${newFee} TEA`);
+export async function updateFee(amount = 0) {
+    console.log(`🤖 Processing: Update Fee`);
+    console.log(`⏳ Current Time: ${new Date().toString()}`);
+    const spinner = ora('Loading...').start();
+
+    try {
+        amount = ethers.utils.parseUnits(amount.toString(), 18);
+        const amountFee = parseFloat(ethers.utils.formatUnits(amount, 18));
+        const amountFeeFormatted = amountFee.toLocaleString('en-US');
+
+        const transaction = await contractInteraction.updateFee(amount);
+        const receipt = await transaction.wait();
+        spinner.stop();
+
+        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
+        console.log(`✅ Successfully converted the fee into ${amountFeeFormatted} tokens.`);
+    } catch (error) {
+        spinner.stop();
+        console.log(`❌ An error occurred when changing the fee: ${getErrorMessage(error)}`);
+    }
 }
 
-async function createToken(wallet, name, symbol, totalSupply) {
+export async function createToken(wallet, name = '', symbol = '', totalSupply = 0) {
     const iface = new ethers.utils.Interface([
         'event TokenCreated(address indexed tokenAddress, string name, string symbol, uint256 totalSupply)',
     ]);
     const walletInstance = new ethers.Wallet(wallet.privateKey, provider);
 
-    const tx = await tokenFactoryContract.connect(walletInstance).createToken(name, symbol, totalSupply, {
+    const tx = await contractInteraction.connect(walletInstance).createToken(name, symbol, totalSupply, {
         value: ethers.utils.parseUnits('10', 18),
     });
     const receipt = await tx.wait();
     const txHash = receipt.transactionHash;
 
-    const addActivityTx = await leaderboardContract.addActivity(
+    const addActivityTx = await addActivity(
         wallet.address,
         'Create Token',
         'Users create token',
@@ -68,8 +98,12 @@ async function createToken(wallet, name, symbol, totalSupply) {
     }
 }
 
-async function withdraw() {
-    const tx = await tokenFactoryContract.withdrawFees();
+export async function withdraw() {
+    const tx = await contractInteraction.withdrawFees();
     await tx.wait();
     console.log('Withdrawn all fees');
 }
+
+const details = await getDetails();
+console.log(details);
+await updateFee(1);
