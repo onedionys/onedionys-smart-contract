@@ -49,7 +49,7 @@ export async function joinQuiz(wallet) {
     const spinner = ora('Loading...').start();
 
     try {
-        const amount = ethers.utils.parseUnits('2', 18);
+        const amount = ethers.utils.parseUnits('20', 18);
         const amountJoin = parseFloat(ethers.utils.formatUnits(amount, 18));
         const amountJoinFormatted = amountJoin.toLocaleString('en-US');
 
