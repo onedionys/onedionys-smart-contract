@@ -36,7 +36,7 @@ export async function addRewardsQuiz(amount = 0) {
         spinner.stop();
 
         console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
-        console.log(`✅ Successfully added a quiz reward of ${amountRewardsFormatted} tokens.`);
+        console.log(`✅ Successfully added a quiz reward of ${amountRewardsFormatted} tokens`);
     } catch (error) {
         spinner.stop();
         console.log(`❌ An error occurred while adding a quiz prize: ${getErrorMessage(error)}`);
@@ -73,7 +73,7 @@ export async function joinQuiz(wallet) {
 
         console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
         console.log(
-            `✅ Successfully participated in the quiz challenge at the cost of ${amountJoinFormatted} token.`,
+            `✅ Successfully participated in the quiz challenge at the cost of ${amountJoinFormatted} token`,
         );
     } catch (error) {
         spinner.stop();
@@ -141,7 +141,7 @@ export async function claimQuizRewards(wallet) {
 
         console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
         console.log(
-            `✅ Successfully claimed ${amountRewardsFormatted} tokens earned from the quiz.`,
+            `✅ Successfully claimed ${amountRewardsFormatted} tokens earned from the quiz`,
         );
     } catch (error) {
         spinner.stop();
