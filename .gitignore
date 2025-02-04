@@ -28,10 +28,27 @@ package-lock.json
 # Ignore files created by operating systems like macOS and Windows
 .DS_Store
 Thumbs.db
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
 
 # Web build output
 # Ignore the directory containing the built web application
 www/
+/dist
+/tmp
+/out-tsc
+/bazel-out
 
 # Hardhat files
 # Ignore cached build artifacts and temporary directories created by Hardhat
@@ -56,3 +73,9 @@ ignition/deployments/chain-31337
 # Test Automated Script
 src/forTest/
 wallets.json
+/.angular/cache
+.sass-cache/
+/connect.lock
+/libpeerconnection.log
+testem.log
+/typings
