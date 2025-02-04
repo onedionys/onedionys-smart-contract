@@ -29,6 +29,7 @@ export async function addActivity(address = '', title = '', description = '', am
         console.log(`📝 Successfully added activity to leaderboard list`);
     } catch (error) {
         spinner.stop();
+        console.log(error);
         console.log(`❌ An error occurred when adding an activity: ${getErrorMessage(error)}`);
     }
 }
@@ -84,21 +85,3 @@ export async function getActivities(address = '') {
         return [];
     }
 }
-
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await addActivity("0xa276d7a3128ec6408162031b5088780ed2957da9", "Burn", "Letsgo Burn Bro", 10, "0x474655c7b63d40e76e35891bf47afba3d46ad59410ebef82cedc618135fb72b9");
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// const users = await getUsers();
-// console.log(users);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// const activities = await getActivities("0xa276d7a3128ec6408162031b5088780ed2957da9");
-// console.log(activities);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
