@@ -79,3 +79,23 @@ wallets.json
 /libpeerconnection.log
 testem.log
 /typings
+
+# Angular configuration file
+# This file contains project settings, and usually, it should be tracked.
+.editorconfig
+.npmrc
+angular.json
+ckeditor.config.js
+tsconfig.app.json
+tsconfig.json
+tsconfig.spec.json
+src/app/
+src/assets/
+src/environments/
+src/favicon.ico
+src/index.html
+src/main.ts
+src/polyfills.ts
+src/styles.scss
+src/test.ts
+src/typings.d.ts
