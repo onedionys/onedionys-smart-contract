@@ -142,6 +142,13 @@ await stUnstake(mainWallet, 1);
 console.log(' ');
 console.log('======================================');
 console.log(' ');
+await stStake(mainWallet, 1);
+console.log(' ');
+console.log('======================================');
+console.log(' ');
+const spinnerT2 = ora('Loading...').start();
+await delay(65000);
+spinnerT2.stop();
 await stWithdraw(mainWallet);
 
 // Native Interaction
