@@ -7,6 +7,7 @@ import { addActivity } from './leaderboard.js';
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+// const userWallet = new ethers.Wallet(process.env.USER_PRIVATE_KEY, provider);
 
 const contractAddress = process.env.REFERRAL_CONTRACT_ADDRESS;
 const contractJson = getJsonABI('Referral.sol/Referral.json');
@@ -44,29 +45,101 @@ export async function addRewardsReferral(amount) {
 }
 
 export async function register(wallet, referrer) {
-    const walletInstance = new ethers.Wallet(wallet.privateKey, provider);
+    console.log(`🤖 Processing: Referral Signup`);
+    console.log(`⏳ Current Time: ${new Date().toString()}`);
+    const spinner = ora('Loading...').start();
 
-    const tx = await referralContract.connect(walletInstance).register(referrer);
-    await tx.wait();
-    console.log('User registered successfully!');
+    try {
+        const connectWallet = contractInteraction.connect(wallet);
+
+        const transaction = await connectWallet.register(referrer);
+        const receipt = await transaction.wait();
+
+        await addActivity(
+            wallet.address,
+            'Referral Signup',
+            `Register using the referral code.`,
+            0,
+            receipt.transactionHash,
+        );
+        spinner.stop();
+
+        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
+        console.log(
+            `✅ Successful registration using referral.`,
+        );
+    } catch (error) {
+        spinner.stop();
+        console.log(`❌ An error occurred while registering using a referral: ${getErrorMessage(error)}`);
+    }
 }
 
 export async function getLeaderboard() {
-    const [leaderboardAddresses, leaderboardCounts] = await referralContract.getLeaderboard();
-    console.log('Leaderboard:');
-    leaderboardAddresses.forEach((address, index) => {
-        console.log(`- Address: ${address}, Referrals: ${leaderboardCounts[index]}`);
-    });
+    const spinner = ora('Loading...').start();
+
+    try {
+        const [addresses, counts] = await contractInteraction.getLeaderboard();
+        const leaderboard = addresses.map((addr, index) => ({
+            address: addr,
+            counts: counts[index].toNumber(),
+        }));
+
+        spinner.stop();
+        return leaderboard;
+    } catch (error) {
+        spinner.stop();
+        console.log(`❌ An error occurred while getting the leaderboard list: ${getErrorMessage(error)}`);
+        return [];
+    }
 }
 
 export async function getDetails(wallet) {
-    const referralDetails = await referralContract.getReferralDetails(wallet.address);
-    console.log('Referral details:', referralDetails);
+    const spinner = ora('Loading...').start();
+
+    try {
+        const referral = await contractInteraction.getReferralDetails(wallet.address);
+        const activities = referral.map(ref => ({
+            referredWallet: ref.referredWallet,
+            registrationTime: ref.registrationTime.toNumber()
+        }));
+
+        spinner.stop();
+        return activities;
+    } catch (error) {
+        spinner.stop();
+        console.log(`❌ An error occurred while getting the details: ${getErrorMessage(error)}`);
+        return [];
+    }
 }
 
-export async function gtUserDetails(wallet) {
-    const [referralsCount, registrationTime] = await referralContract.getUserDetails(wallet.address);
-    console.log(`Referrals Count: ${referralsCount}, Registration Time: ${registrationTime}`);
+export async function getUserDetails(wallet) {
+    const spinner = ora('Loading...').start();
+
+    try {
+        const [referralsCount, registrationTime] = await contractInteraction.getUserDetails(wallet.address);
+
+        spinner.stop();
+        if(typeof referralsCount != "undefined") {
+            return {
+                count: referralsCount.toNumber(),
+                timestamp: registrationTime.toNumber()
+            }
+        }else {
+            return null;
+        }
+    } catch (error) {
+        spinner.stop();
+        console.log(`❌ An error occurred while getting the user details: ${getErrorMessage(error)}`);
+        return null;
+    }
 }
 
-await addRewardsReferral(100);
+// await addRewardsReferral(100);
+// await register(mainWallet, ethers.constants.AddressZero);
+// await register(userWallet, mainWallet.address);
+// const leaderboard = await getLeaderboard();
+// console.log(leaderboard);
+// const details = await getDetails(mainWallet);
+// console.log(details);
+// const user = await getUserDetails(mainWallet);
+// console.log(user);
