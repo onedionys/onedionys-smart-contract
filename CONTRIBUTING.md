@@ -6,7 +6,7 @@ Since this is an open source project that I developed myself, there are still ma
 
 ## Steps To Contribute
 
-- Fork it ( https://github.com/onedionys/dionyshub-smart-contract )
+- Fork it ( https://github.com/onedionys/onedionys-dapp )
 - Create your feature branch (`git checkout -b my-new-feature`)
 - Run eslint and prettierrc first (`npm run lint:fix`)
 - Commit your changes (`git commit -m 'feat: add some new feature'`)
