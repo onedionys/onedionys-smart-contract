@@ -41,7 +41,7 @@ export async function addRewardsStaking(amount) {
     } catch (error) {
         spinner.stop();
         console.log(`❌ An error occurred while adding a staking prize: ${getErrorMessage(error)}`);
-    };
+    }
 }
 
 export async function stake(wallet, amount) {
@@ -122,9 +122,7 @@ export async function withdraw(wallet) {
     const spinner = ora('Loading...').start();
 
     try {
-        const iface = new ethers.utils.Interface([
-            'event RewardsClaimed(address indexed user, uint256 reward)',
-        ]);
+        const iface = new ethers.utils.Interface(['event RewardsClaimed(address indexed user, uint256 reward)']);
 
         const connectWallet = contractInteraction.connect(wallet);
 
@@ -165,26 +163,26 @@ export async function withdraw(wallet) {
     }
 }
 
-console.log(" ");
-console.log("======================================");
-console.log(" ");
+console.log(' ');
+console.log('======================================');
+console.log(' ');
 await addRewardsStaking(100);
-console.log(" ");
-console.log("======================================");
-console.log(" ");
+console.log(' ');
+console.log('======================================');
+console.log(' ');
 await stake(mainWallet, 1);
-console.log(" ");
-console.log("======================================");
-console.log(" ");
+console.log(' ');
+console.log('======================================');
+console.log(' ');
 await delay(60000);
-console.log(" ");
-console.log("======================================");
-console.log(" ");
+console.log(' ');
+console.log('======================================');
+console.log(' ');
 await unstake(mainWallet, 1);
-console.log(" ");
-console.log("======================================");
-console.log(" ");
+console.log(' ');
+console.log('======================================');
+console.log(' ');
 await withdraw(mainWallet);
-console.log(" ");
-console.log("======================================");
-console.log(" ");
+console.log(' ');
+console.log('======================================');
+console.log(' ');
