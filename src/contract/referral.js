@@ -65,9 +65,7 @@ export async function register(wallet, referrer) {
         spinner.stop();
 
         console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
-        console.log(
-            `✅ Successful registration using referral`,
-        );
+        console.log(`✅ Successful registration using referral`);
     } catch (error) {
         spinner.stop();
         console.log(`❌ An error occurred while registering using a referral: ${getErrorMessage(error)}`);
@@ -98,9 +96,9 @@ export async function getDetails(wallet) {
 
     try {
         const referral = await contractInteraction.getReferralDetails(wallet.address);
-        const activities = referral.map(ref => ({
+        const activities = referral.map((ref) => ({
             referredWallet: ref.referredWallet,
-            registrationTime: ref.registrationTime.toNumber()
+            registrationTime: ref.registrationTime.toNumber(),
         }));
 
         spinner.stop();
@@ -119,12 +117,12 @@ export async function getUserDetails(wallet) {
         const [referralsCount, registrationTime] = await contractInteraction.getUserDetails(wallet.address);
 
         spinner.stop();
-        if(typeof referralsCount != "undefined") {
+        if (typeof referralsCount != 'undefined') {
             return {
                 count: referralsCount.toNumber(),
-                timestamp: registrationTime.toNumber()
-            }
-        }else {
+                timestamp: registrationTime.toNumber(),
+            };
+        } else {
             return null;
         }
     } catch (error) {
