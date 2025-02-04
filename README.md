@@ -1,6 +1,6 @@
-# DionysHub
+# Onedionys Dapp
 
-DionysHub Smart Contract is a versatile blockchain solution designed to power decentralized applications (dApps) with features like token faucets, staking, AI-integrated quizzes, lottery games, and NFT rewards. Built for seamless integration and scalability, it utilizes One Dionys Token (ODT) and Tea Token for incentivizing engagement and providing a dynamic user experience.
+Onedionys Dapp is a versatile blockchain solution designed to power decentralized applications (dApps) with features like token faucets, staking, AI-integrated quizzes, lottery games, and NFT rewards. Built for seamless integration and scalability, it utilizes One Dionys Token (ODT) and Tea Token for incentivizing engagement and providing a dynamic user experience.
 
 ## How to Contribute
 
