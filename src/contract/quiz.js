@@ -18,7 +18,7 @@ const quizContractAddress = contractAddress;
 
 export { quizContract, quizContractAddress };
 
-export async function addRewardsQuiz(amount) {
+export async function addRewardsQuiz(amount = 0) {
     console.log(`🤖 Processing: Add Rewards Quiz`);
     console.log(`⏳ Current Time: ${new Date().toString()}`);
     const spinner = ora('Loading...').start();
@@ -81,7 +81,7 @@ export async function joinQuiz(wallet) {
     }
 }
 
-export async function submitAnswer(wallet, isCorrect) {
+export async function submitAnswer(wallet, isCorrect = false) {
     const spinner = ora('Loading...').start();
 
     try {
