@@ -7,7 +7,6 @@ import { addActivity } from './leaderboard.js';
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
-// const userWallet = new ethers.Wallet(process.env.USER_PRIVATE_KEY, provider);
 
 const contractAddress = process.env.REFERRAL_CONTRACT_ADDRESS;
 const contractJson = getJsonABI('Referral.sol/Referral.json');
@@ -131,34 +130,3 @@ export async function getUserDetails(wallet) {
         return null;
     }
 }
-
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await addRewardsReferral(100);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await register(mainWallet, ethers.constants.AddressZero);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// await register(userWallet, mainWallet.address);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// const leaderboard = await getLeaderboard();
-// console.log(leaderboard);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// const details = await getDetails(mainWallet);
-// console.log(details);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
-// const user = await getUserDetails(mainWallet);
-// console.log(user);
-// console.log(" ");
-// console.log("======================================");
-// console.log(" ");
