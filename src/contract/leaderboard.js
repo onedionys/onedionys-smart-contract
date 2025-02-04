@@ -64,8 +64,7 @@ export async function getActivities(address = '') {
         const activities = await contractInteraction.getActivities(address);
         const activitiesData = activities
             .map((wallet) => {
-                const amount = ethers.utils.parseUnits(wallet.amount.toString(), 18);
-                const amountFloat = parseFloat(ethers.utils.formatUnits(amount, 18));
+                const amountFloat = parseFloat(ethers.utils.formatUnits(wallet.amount, 18));
 
                 return {
                     activity: wallet.activity,
