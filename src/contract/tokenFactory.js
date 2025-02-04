@@ -128,24 +128,3 @@ export async function withdraw() {
         console.log(`❌ An error occurred while withdrawing tokens: ${getErrorMessage(error)}`);
     }
 }
-
-// console.log(' ');
-// console.log('======================================');
-// console.log(' ');
-// const details = await getDetails();
-// console.log(details);
-// console.log(' ');
-// console.log('======================================');
-// console.log(' ');
-// await updateFee(1);
-// console.log(' ');
-// console.log('======================================');
-// console.log(' ');
-// await createToken(mainWallet, 'Sajaddah Token', 'SJD', 1000);
-// console.log(' ');
-// console.log('======================================');
-// console.log(' ');
-// await withdraw();
-// console.log(' ');
-// console.log('======================================');
-// console.log(' ');
