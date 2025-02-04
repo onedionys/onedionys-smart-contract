@@ -28,7 +28,7 @@ export async function setLotteryContract() {
         spinner.stop();
 
         console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
-        console.log(`✅ Lottery contract successfully established in NFTCollection contract.`);
+        console.log(`✅ Lottery contract successfully established in NFTCollection contract`);
     } catch (error) {
         spinner.stop();
         console.log(`❌ An error occurred when setting the lottery contract: ${getErrorMessage(error)}`);
