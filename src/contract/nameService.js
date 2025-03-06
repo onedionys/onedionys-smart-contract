@@ -8,7 +8,7 @@ const activeProject = process.env.ACTIVE_PROJECT;
 const rpcNetworkUrl = process.env[`RPC_URL_${activeProject.toUpperCase()}`];
 const blockExplorerUrl = process.env[`BLOCK_EXPLORER_URL_${activeProject.toUpperCase()}`];
 
-const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL_REDDIO);
+const provider = new ethers.providers.JsonRpcProvider(rpcNetworkUrl);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
 const contractAddress = process.env.NAME_SERVICE_CONTRACT_ADDRESS;
@@ -47,7 +47,7 @@ export async function register(wallet, name = '') {
         );
         spinner.stop();
 
-        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL_REDDIO}tx/${receipt.transactionHash}`);
+        console.log(`🧾 Transaction URL: ${blockExplorerUrl}tx/${receipt.transactionHash}`);
         console.log(`✅ Successfully registered a name service with the name ${name}.chai`);
     } catch (error) {
         spinner.stop();
@@ -95,7 +95,7 @@ export async function withdraw() {
         const receipt = await transaction.wait();
         spinner.stop();
 
-        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL_REDDIO}tx/${receipt.transactionHash}`);
+        console.log(`🧾 Transaction URL: ${blockExplorerUrl}tx/${receipt.transactionHash}`);
         console.log(`✅ Successfully withdraw all tokens from the name service contract`);
     } catch (error) {
         spinner.stop();
