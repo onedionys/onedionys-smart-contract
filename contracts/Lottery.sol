@@ -32,7 +32,7 @@ contract Lottery is Ownable {
     mapping(address => uint256) public userPoints;
     mapping(address => uint256) public lastSpinTime;
 
-    event SpinWheel(address indexed user, string rarity, uint256 points, string cid);
+    event SpinWheel(address indexed user, uint256 tokenId, string rarity, uint256 points, string cid);
     event LeaderboardUpdated(address indexed user, uint256 points);
     event Withdraw(address indexed user, uint256 points);
     event RewardTokensAdded(uint256 amount);
@@ -86,7 +86,7 @@ contract Lottery is Ownable {
 
         (, , string memory cid) = nftCollection.getNFTDetails(tokenId);
 
-        emit SpinWheel(msg.sender, rarity, points, cid);
+        emit SpinWheel(msg.sender, tokenId, rarity, points, cid);
     }
 
     function _updateLeaderboard(address user) internal {
