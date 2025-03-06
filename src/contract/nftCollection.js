@@ -8,7 +8,7 @@ const activeProject = process.env.ACTIVE_PROJECT;
 const rpcNetworkUrl = process.env[`RPC_URL_${activeProject.toUpperCase()}`];
 const blockExplorerUrl = process.env[`BLOCK_EXPLORER_URL_${activeProject.toUpperCase()}`];
 
-const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL_REDDIO);
+const provider = new ethers.providers.JsonRpcProvider(rpcNetworkUrl);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
 const contractAddress = process.env.NFT_COLLECTION_CONTRACT_ADDRESS;
@@ -31,7 +31,7 @@ export async function setLotteryContract() {
         const receipt = await transaction.wait();
         spinner.stop();
 
-        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL_REDDIO}tx/${receipt.transactionHash}`);
+        console.log(`🧾 Transaction URL: ${blockExplorerUrl}tx/${receipt.transactionHash}`);
         console.log(`✅ Lottery contract successfully established in NFTCollection contract`);
     } catch (error) {
         spinner.stop();
