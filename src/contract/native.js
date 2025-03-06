@@ -11,7 +11,7 @@ const blockExplorerUrl = process.env[`BLOCK_EXPLORER_URL_${activeProject.toUpper
 const provider = new ethers.providers.JsonRpcProvider(rpcNetworkUrl);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
-const contractAddress = process.env.NATIVE_CONTRACT_ADDRESS;
+const contractAddress = process.env[`NATIVE_CONTRACT_ADDRESS_${activeProject.toUpperCase()}`];
 const contractJson = getJsonABI('Native.sol/Native.json');
 const contractAbi = contractJson.abi;
 const contractInteraction = new ethers.Contract(contractAddress, contractAbi, mainWallet);
