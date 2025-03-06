@@ -19,6 +19,7 @@ contract Quiz is Ownable {
 
     event QuizJoined(address indexed user, uint256 amount);
     event AnswerSubmitted(address indexed user, bool isCorrect);
+    event QuestionSkipped(address indexed user);
     event RewardsClaimed(address indexed user, uint256 reward);
     event RewardTokensAdded(uint256 amount);
 
@@ -51,21 +52,33 @@ contract Quiz is Ownable {
         emit QuizJoined(msg.sender, requiredAmount);
     }
 
-    function submitAnswer(bool isCorrect) external {
-        require(isParticipant[msg.sender], 'User not joined in quiz');
-        require(currentQuestionIndex[msg.sender] < totalQuestions, 'Quiz completed');
+    function submitAnswer(bool isCorrect, address user) external {
+        require(isParticipant[user], 'User not joined in quiz');
+        require(currentQuestionIndex[user] < totalQuestions, 'Quiz completed');
 
-        uint256 elapsedTime = block.timestamp - questionStartTime[msg.sender];
-        require(elapsedTime <= timePerQuestion, 'Time is up for this question');
-
-        if (isCorrect) {
-            userPoints[msg.sender]++;
+        if (block.timestamp - questionStartTime[user] > timePerQuestion) {
+            skipQuestion(user);
+            return;
         }
 
-        currentQuestionIndex[msg.sender]++;
-        questionStartTime[msg.sender] = block.timestamp;
+        if (isCorrect) {
+            userPoints[user]++;
+        }
 
-        emit AnswerSubmitted(msg.sender, isCorrect);
+        currentQuestionIndex[user]++;
+        questionStartTime[user] = block.timestamp;
+
+        emit AnswerSubmitted(user, isCorrect);
+    }
+
+    function skipQuestion(address user) public {
+        require(isParticipant[user], 'User not joined in quiz');
+        require(currentQuestionIndex[user] < totalQuestions, 'Quiz completed');
+
+        currentQuestionIndex[user]++;
+        questionStartTime[user] = block.timestamp;
+
+        emit QuestionSkipped(user);
     }
 
     function calculateReward(address user) public view returns (uint256) {
