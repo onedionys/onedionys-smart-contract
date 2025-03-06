@@ -15,7 +15,7 @@ module.exports = {
         },
     },
     networks: {
-        'tea-assam': {
+        'tea': {
             url: process.env.RPC_URL_TEA,
             accounts: [process.env.PRIVATE_KEY],
             chainId: Number(process.env.CHAIN_ID_TEA),
