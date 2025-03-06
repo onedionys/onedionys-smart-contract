@@ -9,6 +9,7 @@ contract Staking is Ownable {
 
     uint256 public totalRewardPool;
     uint256 public rewardPerSecond = 0.00001 * 10 ** 18;
+    uint256 public totalStaked;
 
     mapping(address => uint256) public stakedAmounts;
     mapping(address => uint256) public stakingTimestamp;
@@ -37,6 +38,7 @@ contract Staking is Ownable {
         }
 
         stakedAmounts[msg.sender] += amount;
+        totalStaked += amount;
         stakingTimestamp[msg.sender] = block.timestamp;
 
         emit Staked(msg.sender, amount);
@@ -47,6 +49,7 @@ contract Staking is Ownable {
 
         _claimRewards(msg.sender);
         stakedAmounts[msg.sender] -= amount;
+        totalStaked -= amount;
 
         token.transfer(msg.sender, amount);
 
@@ -100,5 +103,9 @@ contract Staking is Ownable {
         uint256 stakingDuration = block.timestamp - stakingTimestamp[user];
         uint256 reward = (rewardPerSecond * stakedAmount * stakingDuration) / 1e18;
         return reward;
+    }
+
+    function getTotalStaked() external view returns (uint256) {
+        return totalStaked;
     }
 }
