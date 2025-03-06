@@ -63,6 +63,8 @@ import {
 } from './contract/leaderboard.js';
 
 const activeProject = process.env.ACTIVE_PROJECT;
+const rpcNetworkUrl = process.env[`RPC_URL_${activeProject.toUpperCase()}`];
+const blockExplorerUrl = process.env[`BLOCK_EXPLORER_URL_${activeProject.toUpperCase()}`];
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL_REDDIO);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
