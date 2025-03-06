@@ -5,12 +5,11 @@ import { getErrorMessage, getJsonABI } from './../utils.js';
 
 const activeProject = process.env.ACTIVE_PROJECT;
 const rpcNetworkUrl = process.env[`RPC_URL_${activeProject.toUpperCase()}`];
-const blockExplorerUrl = process.env[`BLOCK_EXPLORER_URL_${activeProject.toUpperCase()}`];
 
 const provider = new ethers.providers.JsonRpcProvider(rpcNetworkUrl);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
-const contractAddress = process.env.LEADERBOARD_CONTRACT_ADDRESS;
+const contractAddress = process.env[`LEADERBOARD_CONTRACT_ADDRESS_${activeProject.toUpperCase()}`];
 const contractJson = getJsonABI('Leaderboard.sol/Leaderboard.json');
 const contractAbi = contractJson.abi;
 const contractInteraction = new ethers.Contract(contractAddress, contractAbi, mainWallet);
