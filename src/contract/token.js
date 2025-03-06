@@ -4,7 +4,7 @@ import ora from 'ora';
 import { getErrorMessage, getJsonABI } from './../utils.js';
 import { addActivity } from './leaderboard.js';
 
-const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
+const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL_REDDIO);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
 const contractAddress = process.env.TOKEN_CONTRACT_ADDRESS;
@@ -34,7 +34,7 @@ export async function transferTea(wallet, amount = 0) {
         const receipt = await transaction.wait();
         spinner.stop();
 
-        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
+        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL_REDDIO}tx/${receipt.transactionHash}`);
         console.log(`✅ Successfully transferred ${amountTransferFormatted} tokens to address ${wallet.address}`);
     } catch (error) {
         spinner.stop();
@@ -81,7 +81,7 @@ export async function claimFaucet(wallet) {
         );
         spinner.stop();
 
-        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
+        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL_REDDIO}tx/${receipt.transactionHash}`);
         console.log(`✅ Successfully claim faucet for address ${wallet.address}`);
     } catch (error) {
         spinner.stop();
@@ -113,7 +113,7 @@ export async function burnToken(wallet, amount = 0) {
         );
         spinner.stop();
 
-        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
+        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL_REDDIO}tx/${receipt.transactionHash}`);
         console.log(`✅ Successfully burn ${amountBurnedFormatted} tokens from address ${wallet.address}`);
     } catch (error) {
         spinner.stop();
