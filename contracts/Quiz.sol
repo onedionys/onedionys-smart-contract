@@ -8,8 +8,9 @@ contract Quiz is Ownable {
     IERC20 public token;
 
     uint256 public totalRewardPool;
-    uint256 public maxReward = 10 * 4 * 10 ** 18;
-    uint256 public timePerQuestion = 30;
+    uint256 public maxReward = 10 * 2 * 10 ** 18;
+    uint256 public requiredAmount = 10 * 10 ** 18;
+    uint256 public timePerQuestion = 60;
     uint256 public totalQuestions = 10;
 
     mapping(address => uint256) public userPoints;
@@ -28,9 +29,8 @@ contract Quiz is Ownable {
     }
 
     function joinQuiz() external {
-        uint256 requiredAmount = 20 * 10 ** 18;
-        uint256 ownerShare = 10 * 10 ** 18;
-        uint256 contractShare = 10 * 10 ** 18;
+        uint256 ownerShare = 5 * 10 ** 18;
+        uint256 contractShare = 5 * 10 ** 18;
 
         require(token.balanceOf(msg.sender) >= requiredAmount, 'Not enough token to join');
 
@@ -83,7 +83,7 @@ contract Quiz is Ownable {
 
     function calculateReward(address user) public view returns (uint256) {
         uint256 points = userPoints[user];
-        uint256 reward = points * 4 * 10 ** 18;
+        uint256 reward = points * 2 * 10 ** 18;
 
         if (reward > maxReward) {
             reward = maxReward;
