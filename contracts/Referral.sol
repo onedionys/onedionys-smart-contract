@@ -18,7 +18,7 @@ contract Referral {
         ReferralDetail[] referralDetails;
     }
 
-    uint256 public constant REWARD_AMOUNT = 100 * 10 ** 18;
+    uint256 public constant REWARD_AMOUNT = 10 * 10 ** 18;
     uint256 public totalRewardPool;
     address[] public allUsers;
     address public owner;
