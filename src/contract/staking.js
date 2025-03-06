@@ -9,7 +9,7 @@ const activeProject = process.env.ACTIVE_PROJECT;
 const rpcNetworkUrl = process.env[`RPC_URL_${activeProject.toUpperCase()}`];
 const blockExplorerUrl = process.env[`BLOCK_EXPLORER_URL_${activeProject.toUpperCase()}`];
 
-const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL_REDDIO);
+const provider = new ethers.providers.JsonRpcProvider(rpcNetworkUrl);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
 const contractAddress = process.env.STAKING_CONTRACT_ADDRESS;
@@ -39,7 +39,7 @@ export async function addRewardsStaking(amount) {
         const receipt = await transaction.wait();
         spinner.stop();
 
-        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL_REDDIO}tx/${receipt.transactionHash}`);
+        console.log(`🧾 Transaction URL: ${blockExplorerUrl}tx/${receipt.transactionHash}`);
         console.log(`✅ Successfully added a staking prize of ${amountRewardsFormatted} tokens`);
     } catch (error) {
         spinner.stop();
@@ -75,7 +75,7 @@ export async function stake(wallet, amount) {
         );
         spinner.stop();
 
-        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL_REDDIO}tx/${receipt.transactionHash}`);
+        console.log(`🧾 Transaction URL: ${blockExplorerUrl}tx/${receipt.transactionHash}`);
         console.log(`✅ Successfully stake ${amountStakedFormatted} tokens`);
     } catch (error) {
         spinner.stop();
@@ -111,7 +111,7 @@ export async function unstake(wallet, amount) {
         );
         spinner.stop();
 
-        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL_REDDIO}tx/${receipt.transactionHash}`);
+        console.log(`🧾 Transaction URL: ${blockExplorerUrl}tx/${receipt.transactionHash}`);
         console.log(`✅ Successfully unstake ${amountUnstakedFormatted} tokens`);
     } catch (error) {
         spinner.stop();
@@ -158,7 +158,7 @@ export async function withdraw(wallet) {
         );
         spinner.stop();
 
-        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL_REDDIO}tx/${receipt.transactionHash}`);
+        console.log(`🧾 Transaction URL: ${blockExplorerUrl}tx/${receipt.transactionHash}`);
         console.log(`✅ Successfully claimed ${amountRewardsFormatted} tokens from staking rewards`);
     } catch (error) {
         spinner.stop();
