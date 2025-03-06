@@ -24,7 +24,7 @@ contract Lottery is Ownable {
     }
 
     uint256 public ticketPrice = 10 * 10 ** 18;
-    uint256 public spinCooldown = 5 minutes;
+    uint256 public spinCooldown = 2 minutes;
     uint256 public totalRewardPool;
 
     LeaderboardEntry[] public leaderboard;
