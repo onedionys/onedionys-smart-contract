@@ -4,7 +4,7 @@ pragma solidity ^0.8.28;
 import '@openzeppelin/contracts/access/Ownable.sol';
 
 contract Native is Ownable {
-    uint256 public faucetAmount = 1 * 10 ** 18;
+    uint256 public faucetAmount = 0.2 * 10 ** 18;
     uint256 public faucetLimit = 5000 * 10 ** 18;
     uint256 public totalFaucetDistributed;
 
