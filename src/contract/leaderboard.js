@@ -3,7 +3,7 @@ import process from 'process';
 import ora from 'ora';
 import { getErrorMessage, getJsonABI } from './../utils.js';
 
-const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
+const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL_REDDIO);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
 const contractAddress = process.env.LEADERBOARD_CONTRACT_ADDRESS;
@@ -22,7 +22,7 @@ export async function addActivity(address = '', title = '', description = '', am
     try {
         amount = ethers.utils.parseUnits(amount.toString(), 18);
 
-        const transaction = await contractInteraction.addActivity(address, title, description, amount, transactionHash);
+        const transaction = await contractInteraction.addActivity(address, title, description, amount, transactionHash, []);
         await transaction.wait();
         spinner.stop();
 
