@@ -253,7 +253,7 @@ console.log(tokenFactoryDetails);
 console.log(' ');
 console.log('======================================');
 console.log(' ');
-await tfUpdateFee(1);
+await tfUpdateFee(10); // 10, 1.5, & 1
 console.log(' ');
 console.log('======================================');
 console.log(' ');
