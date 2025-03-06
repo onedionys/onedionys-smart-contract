@@ -16,9 +16,23 @@ module.exports = {
     },
     networks: {
         'tea-assam': {
-            url: process.env.RPC_URL,
+            url: process.env.RPC_URL_TEA,
             accounts: [process.env.PRIVATE_KEY],
-            chainId: Number(process.env.CHAIN_ID),
+            chainId: Number(process.env.CHAIN_ID_TEA),
+            gas: 12000000,
+            gasPrice: 20000000000,
+        },
+        'reddio': {
+            url: process.env.RPC_URL_REDDIO,
+            accounts: [process.env.PRIVATE_KEY],
+            chainId: Number(process.env.CHAIN_ID_REDDIO),
+            gas: 12000000,
+            gasPrice: 20000000000,
+        },
+        'monad': {
+            url: process.env.RPC_URL_MONAD,
+            accounts: [process.env.PRIVATE_KEY],
+            chainId: Number(process.env.CHAIN_ID_MONAD),
             gas: 12000000,
             gasPrice: 20000000000,
         },
