@@ -4,7 +4,7 @@ import ora from 'ora';
 import { getErrorMessage, getJsonABI } from './../utils.js';
 import { addActivity } from './leaderboard.js';
 
-const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
+const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL_REDDIO);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
 const contractAddress = process.env.TOKEN_FACTORY_CONTRACT_ADDRESS;
@@ -54,7 +54,7 @@ export async function updateFee(amount = 0) {
         const receipt = await transaction.wait();
         spinner.stop();
 
-        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
+        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL_REDDIO}tx/${receipt.transactionHash}`);
         console.log(`✅ Successfully converted the fee into ${amountFeeFormatted} tokens`);
     } catch (error) {
         spinner.stop();
@@ -103,7 +103,7 @@ export async function createToken(wallet, name = '', symbol = '', totalSupply = 
         );
         spinner.stop();
 
-        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
+        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL_REDDIO}tx/${receipt.transactionHash}`);
         console.log(`✅ Successfully create a token with address ${tokenAddress}`);
     } catch (error) {
         spinner.stop();
@@ -121,7 +121,7 @@ export async function withdraw() {
         const receipt = await transaction.wait();
         spinner.stop();
 
-        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL}tx/${receipt.transactionHash}`);
+        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL_REDDIO}tx/${receipt.transactionHash}`);
         console.log(`✅ Successfully withdraw all tokens from the token factory contract`);
     } catch (error) {
         spinner.stop();
