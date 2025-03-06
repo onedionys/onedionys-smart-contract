@@ -10,7 +10,7 @@ const activeProject = process.env.ACTIVE_PROJECT;
 const rpcNetworkUrl = process.env[`RPC_URL_${activeProject.toUpperCase()}`];
 const blockExplorerUrl = process.env[`BLOCK_EXPLORER_URL_${activeProject.toUpperCase()}`];
 
-const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL_REDDIO);
+const provider = new ethers.providers.JsonRpcProvider(rpcNetworkUrl);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
 const contractAddress = process.env.LOTTERY_CONTRACT_ADDRESS;
@@ -40,7 +40,7 @@ export async function addRewardsLottery(amount = 0) {
         const receipt = await transaction.wait();
         spinner.stop();
 
-        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL_REDDIO}tx/${receipt.transactionHash}`);
+        console.log(`🧾 Transaction URL: ${blockExplorerUrl}tx/${receipt.transactionHash}`);
         console.log(`✅ Successfully added a lottery prize of ${amountRewardsFormatted} tokens`);
     } catch (error) {
         spinner.stop();
@@ -99,7 +99,7 @@ export async function spinWheel(wallet) {
         );
         spinner.stop();
 
-        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL_REDDIO}tx/${receipt.transactionHash}`);
+        console.log(`🧾 Transaction URL: ${blockExplorerUrl}tx/${receipt.transactionHash}`);
         console.log(
             `✅ Successfully spin the wheel and won 1 ${rarityNft} NFT (worth ${amountPointsFormatted}), costing ${amountSpinFormatted} tokens`,
         );
@@ -151,7 +151,7 @@ export async function burnNft(wallet, tokenId = 0) {
         );
         spinner.stop();
 
-        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL_REDDIO}tx/${receipt.transactionHash}`);
+        console.log(`🧾 Transaction URL: ${blockExplorerUrl}tx/${receipt.transactionHash}`);
         console.log(`✅ Successfully burned 1 ${rarity} NFT with ID ${tokenId}`);
     } catch (error) {
         spinner.stop();
@@ -198,7 +198,7 @@ export async function withdraw(wallet) {
         );
         spinner.stop();
 
-        console.log(`🧾 Transaction URL: ${process.env.BLOCK_EXPLORER_URL_REDDIO}tx/${receipt.transactionHash}`);
+        console.log(`🧾 Transaction URL: ${blockExplorerUrl}tx/${receipt.transactionHash}`);
         console.log(`✅ Successfully withdrawn all tokens (${amountPointsFormatted}) won from the lottery`);
     } catch (error) {
         spinner.stop();
