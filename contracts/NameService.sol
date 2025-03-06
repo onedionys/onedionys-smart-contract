@@ -7,7 +7,7 @@ contract NameService {
     address public owner;
 
     mapping(string => address) public nameToOwner;
-    mapping(address => string) public ownerToName;
+    mapping(address => string[]) public ownerToNames;
 
     event NameRegistered(address indexed owner, string indexed name);
 
@@ -26,19 +26,14 @@ contract NameService {
         string memory fullName = string(abi.encodePacked(name, domainExtension));
         require(nameToOwner[fullName] == address(0), 'Name already registered');
 
-        if (bytes(ownerToName[msg.sender]).length > 0) {
-            string memory oldName = ownerToName[msg.sender];
-            nameToOwner[oldName] = address(0);
-        }
-
         nameToOwner[fullName] = msg.sender;
-        ownerToName[msg.sender] = fullName;
+        ownerToNames[msg.sender].push(fullName);
 
         emit NameRegistered(msg.sender, fullName);
     }
 
-    function getName(address user) external view returns (string memory) {
-        return ownerToName[user];
+    function getNamesByOwner(address user) external view returns (string[] memory) {
+        return ownerToNames[user];
     }
 
     function getOwner(string calldata name) external view returns (address) {
