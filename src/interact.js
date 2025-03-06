@@ -62,7 +62,7 @@ import {
     getActivities as lbGetActivities,
 } from './contract/leaderboard.js';
 
-const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
+const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL_REDDIO);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 const userWallet = new ethers.Wallet(process.env.USER_PRIVATE_KEY, provider);
 const randomHash = ethers.utils.id(Math.random().toString());
