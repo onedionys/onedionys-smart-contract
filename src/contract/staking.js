@@ -5,6 +5,8 @@ import { getErrorMessage, getJsonABI } from './../utils.js';
 import { addActivity } from './leaderboard.js';
 import { tokenContract } from './token.js';
 
+const activeProject = process.env.ACTIVE_PROJECT;
+
 const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL_REDDIO);
 const mainWallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
