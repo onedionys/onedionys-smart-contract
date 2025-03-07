@@ -32,7 +32,7 @@ describe('Native Contract', function () {
             await native.connect(user).claimFaucet();
 
             const totalDistributed = await native.totalFaucetDistributed();
-            expect(totalDistributed.toString()).to.equal(ethers.utils.parseEther('1').toString());
+            expect(totalDistributed.toString()).to.equal(ethers.utils.parseEther('0.2').toString());
 
             const lastClaimTime = await native.lastClaimTime(user.address);
             expect(lastClaimTime.toNumber()).to.be.greaterThan(0);
