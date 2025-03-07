@@ -23,7 +23,7 @@ describe('NameService', function () {
         await nameService.connect(addr1).registerName(name, { value: registrationFee });
 
         const fullName = `${name}.chai`;
-        expect(await nameService.getName(addr1.address)).to.equal(fullName);
+        expect(await nameService.getNamesByOwner(addr1.address)).to.include(fullName);
         expect(await nameService.getOwner(name)).to.equal(addr1.address);
     });
 
@@ -50,11 +50,11 @@ describe('NameService', function () {
         const name2 = 'myname2';
 
         await nameService.connect(addr1).registerName(name1, { value: registrationFee });
-        expect(await nameService.getName(addr1.address)).to.equal(`${name1}.chai`);
+        expect(await nameService.getNamesByOwner(addr1.address)).to.include(`${name1}.chai`);
 
         await nameService.connect(addr1).registerName(name2, { value: registrationFee });
-        expect(await nameService.getName(addr1.address)).to.equal(`${name2}.chai`);
-        expect(await nameService.getOwner(name1)).to.equal(ethers.constants.AddressZero);
+        expect(await nameService.getNamesByOwner(addr1.address)).to.include(`${name2}.chai`);
+        expect(await nameService.getOwner(name1)).to.equal(addr1.address);
         expect(await nameService.getOwner(name2)).to.equal(addr1.address);
     });
 
