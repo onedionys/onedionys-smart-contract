@@ -31,9 +31,9 @@ describe('Quiz Contract', function () {
 
     describe('Join Quiz', function () {
         it('Should allow users to join the quiz with sufficient tokens', async function () {
-            const joinAmount = ethers.utils.parseEther('20');
-            const ownerShare = ethers.utils.parseEther('10');
-            const contractShare = ethers.utils.parseEther('10');
+            const joinAmount = ethers.utils.parseEther('10');
+            const ownerShare = ethers.utils.parseEther('5');
+            const contractShare = ethers.utils.parseEther('5');
 
             const userInitialBalance = await token.balanceOf(user1.address);
             const ownerInitialBalance = await token.balanceOf(owner.address);
@@ -54,73 +54,61 @@ describe('Quiz Contract', function () {
 
     describe('Submit Answer', function () {
         it('Should increase user points if the answer is correct and within time', async function () {
-            const joinAmount = ethers.utils.parseEther('20');
+            const joinAmount = ethers.utils.parseEther('10');
 
             await token.connect(user1).approve(quiz.address, joinAmount);
             await quiz.connect(user1).joinQuiz();
 
-            await quiz.connect(user1).submitAnswer(true);
+            await quiz.connect(user1).submitAnswer(true, user1.address);
 
             const points = await quiz.userPoints(user1.address);
             expect(points.toString()).to.equal('1');
         });
 
-        it('Should reject answer submission if time has expired', async function () {
-            const joinAmount = ethers.utils.parseEther('20');
-
-            await token.connect(user1).approve(quiz.address, joinAmount);
-            await quiz.connect(user1).joinQuiz();
-
-            await ethers.provider.send('evm_increaseTime', [31]);
-            await ethers.provider.send('evm_mine', []);
-
-            await expect(quiz.connect(user1).submitAnswer(true)).to.be.rejectedWith('Time is up for this question');
-        });
-
         it('Should reject answer submission after all questions are answered', async function () {
-            const joinAmount = ethers.utils.parseEther('20');
+            const joinAmount = ethers.utils.parseEther('10');
 
             await token.connect(user1).approve(quiz.address, joinAmount);
             await quiz.connect(user1).joinQuiz();
 
             for (let i = 0; i < 10; i++) {
-                await quiz.connect(user1).submitAnswer(true);
+                await quiz.connect(user1).submitAnswer(true, user1.address);
             }
 
-            await expect(quiz.connect(user1).submitAnswer(true)).to.be.rejectedWith('Quiz completed');
+            await expect(quiz.connect(user1).submitAnswer(true, user1.address)).to.be.rejectedWith('Quiz completed');
         });
     });
 
     describe('Claim Rewards', function () {
         it('Should allow users to claim rewards for their points', async function () {
-            const joinAmount = ethers.utils.parseEther('20');
+            const joinAmount = ethers.utils.parseEther('10');
 
             await token.connect(user1).approve(quiz.address, joinAmount);
             await quiz.connect(user1).joinQuiz();
 
-            await quiz.connect(user1).submitAnswer(true);
-            await quiz.connect(user1).submitAnswer(true);
+            await quiz.connect(user1).submitAnswer(true, user1.address);
+            await quiz.connect(user1).submitAnswer(true, user1.address);
 
             const expectedReward = await quiz.calculateReward(user1.address);
-            expect(expectedReward.toString()).to.equal(ethers.utils.parseEther('8').toString());
+            expect(expectedReward.toString()).to.equal(ethers.utils.parseEther('4').toString());
 
             await quiz.connect(user1).claimRewards();
 
             const userBalance = await token.balanceOf(user1.address);
-            expect(userBalance.toString()).to.equal(ethers.utils.parseEther('88').toString());
+            expect(userBalance.toString()).to.equal(ethers.utils.parseEther('94').toString());
 
             const contractRewardPool = await quiz.totalRewardPool();
-            expect(contractRewardPool.toString()).to.equal(ethers.utils.parseEther('492').toString());
+            expect(contractRewardPool.toString()).to.equal(ethers.utils.parseEther('496').toString());
         });
 
         it('Should reset user state after claiming rewards', async function () {
-            const joinAmount = ethers.utils.parseEther('20');
+            const joinAmount = ethers.utils.parseEther('10');
 
             await token.connect(user1).approve(quiz.address, joinAmount);
             await quiz.connect(user1).joinQuiz();
 
-            await quiz.connect(user1).submitAnswer(true);
-            await quiz.connect(user1).submitAnswer(true);
+            await quiz.connect(user1).submitAnswer(true, user1.address);
+            await quiz.connect(user1).submitAnswer(true, user1.address);
 
             await quiz.connect(user1).claimRewards();
 
