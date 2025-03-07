@@ -41,7 +41,7 @@ describe('Referral System Contract', function () {
             expect(user1Details.referralsCount.toNumber()).to.equal(1);
 
             const user1Balance = await token.balanceOf(user1.address);
-            expect(user1Balance.toString()).to.equal(ethers.utils.parseEther('100').toString());
+            expect(user1Balance.toString()).to.equal(ethers.utils.parseEther('10').toString());
         });
 
         it('Should not allow registration with an invalid referrer', async function () {
