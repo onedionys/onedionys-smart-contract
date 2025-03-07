@@ -21,7 +21,7 @@ contract NFTCollection is ERC721URIStorage, Ownable {
     event NFTMinted(address indexed to, uint256 tokenId, string rarity, uint256 points, string cid);
     event NFTBurned(address indexed owner, uint256 tokenId);
 
-    constructor() ERC721('Dion NFT v1', 'DNN1') Ownable(msg.sender) {
+    constructor() ERC721('Dion NFT V1', 'DNN1') Ownable(msg.sender) {
         rarityMetadataCID['Common'] = 'bafkreiglegydzpdxrvszs554pogs7uuvc5iqykmsibk6dtcbiohqrgnohu';
         rarityMetadataCID['Uncommon'] = 'bafkreihxegzellny3ftx3zcti2aorl5n7iwdkb7cdwwdlvna5hq3e2hgom';
         rarityMetadataCID['Rare'] = 'bafkreiejp4jbxq3jc6utjvehlflga37rhqd7eudr5fasucvo5ffaqnmfje';
