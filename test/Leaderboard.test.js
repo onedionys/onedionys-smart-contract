@@ -34,6 +34,7 @@ describe('Leaderboard Contract', function () {
                 activity.description,
                 activity.amount,
                 activity.txhash,
+                [],
             );
 
             const userActivities = await leaderboard.getActivities(user1.address);
@@ -51,7 +52,7 @@ describe('Leaderboard Contract', function () {
             ];
 
             for (const act of activities) {
-                await leaderboard.addActivity(user1.address, act.activity, act.description, act.amount, act.txhash);
+                await leaderboard.addActivity(user1.address, act.activity, act.description, act.amount, act.txhash, []);
             }
 
             const userActivities = await leaderboard.getActivities(user1.address);
@@ -61,21 +62,21 @@ describe('Leaderboard Contract', function () {
         });
 
         it('Should register user only once', async function () {
-            await leaderboard.addActivity(user1.address, 'stake', 'Stake 100 tokens', 100, '0x123');
+            await leaderboard.addActivity(user1.address, 'stake', 'Stake 100 tokens', 100, '0x123', []);
 
             const users = await leaderboard.getAllUsers();
             expect(users.length).to.equal(1);
             expect(users[0]).to.equal(user1.address);
 
-            await leaderboard.addActivity(user1.address, 'unstake', 'Unstake 50 tokens', 50, '0x456');
+            await leaderboard.addActivity(user1.address, 'unstake', 'Unstake 50 tokens', 50, '0x456', []);
 
             const updatedUsers = await leaderboard.getAllUsers();
             expect(updatedUsers.length).to.equal(1);
         });
 
         it('Should handle activities from multiple users', async function () {
-            await leaderboard.addActivity(user1.address, 'stake', 'Stake 100 tokens', 100, '0x123');
-            await leaderboard.addActivity(user2.address, 'stake', 'Stake 200 tokens', 200, '0x456');
+            await leaderboard.addActivity(user1.address, 'stake', 'Stake 100 tokens', 100, '0x123', []);
+            await leaderboard.addActivity(user2.address, 'stake', 'Stake 200 tokens', 200, '0x456', []);
 
             const users = await leaderboard.getAllUsers();
             expect(users.length).to.equal(2);
@@ -99,8 +100,8 @@ describe('Leaderboard Contract', function () {
         });
 
         it('Should return all registered users', async function () {
-            await leaderboard.addActivity(user1.address, 'stake', 'Stake 100 tokens', 100, '0x123');
-            await leaderboard.addActivity(user2.address, 'stake', 'Stake 200 tokens', 200, '0x456');
+            await leaderboard.addActivity(user1.address, 'stake', 'Stake 100 tokens', 100, '0x123', []);
+            await leaderboard.addActivity(user2.address, 'stake', 'Stake 200 tokens', 200, '0x456', []);
 
             const users = await leaderboard.getAllUsers();
             expect(users.length).to.equal(2);
@@ -116,8 +117,8 @@ describe('Leaderboard Contract', function () {
         });
 
         it('Should return all activities for a specific user', async function () {
-            await leaderboard.addActivity(user1.address, 'stake', 'Stake 100 tokens', 100, '0x123');
-            await leaderboard.addActivity(user1.address, 'unstake', 'Unstake 50 tokens', 50, '0x456');
+            await leaderboard.addActivity(user1.address, 'stake', 'Stake 100 tokens', 100, '0x123', []);
+            await leaderboard.addActivity(user1.address, 'unstake', 'Unstake 50 tokens', 50, '0x456', []);
 
             const activities = await leaderboard.getActivities(user1.address);
             expect(activities.length).to.equal(2);
