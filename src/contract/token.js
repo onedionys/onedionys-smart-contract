@@ -21,8 +21,8 @@ const tokenContractAddress = contractAddress;
 
 export { tokenContract, tokenContractAddress };
 
-export async function transferTea(wallet, amount = 0) {
-    console.log(`🤖 Processing: Transfer TEA`);
+export async function transferToken(wallet, amount = 0) {
+    console.log(`🤖 Processing: Transfer Token`);
     console.log(`⏳ Current Time: ${new Date().toString()}`);
     const spinner = ora('Loading...').start();
 
