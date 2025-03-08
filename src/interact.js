@@ -3,7 +3,7 @@ import process from 'process';
 import delay from 'delay';
 import ora from 'ora';
 import {
-    transferTea as tkTransferTea,
+    transferToken as tkTransferToken,
     claimFaucet as tkClaimFaucet,
     burnToken as tkBurnToken,
 } from './contract/token.js';
@@ -74,7 +74,7 @@ const randomHash = ethers.utils.id(Math.random().toString());
 console.log(' ');
 console.log('======================================');
 console.log(' ');
-await tkTransferTea(userWallet, 1);
+await tkTransferToken(userWallet, 1);
 console.log(' ');
 console.log('======================================');
 console.log(' ');
