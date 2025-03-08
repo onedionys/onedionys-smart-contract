@@ -1,13 +1,13 @@
 {
     "name": "dionyshub-smart-contract",
     "version": "1.0.0",
-    "description": "DionysHub Smart Contract powers a decentralized platform with token faucets, staking, AI-powered quizzes, and lottery games, using One Dionys Token (ODT) and Tea Token.",
+    "description": "DionysHub Smart Contract powers a decentralized platform with token faucets, staking, AI-powered quizzes, and lottery games, using Dion Token (DNT).",
     "keywords": [
         "dionyshub",
         "smart-contract",
         "one-dionys-token",
         "onedionys",
-        "tea-token",
+        "dion-token",
         "staking",
         "nft-rewards",
         "lottery-game",
