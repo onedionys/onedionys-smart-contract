@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
-import '@openzeppelin/contracts/access/Ownable.sol';
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 interface INFTCollection {
     function mint(address to, string memory rarity, uint256 points) external returns (uint256);
@@ -43,8 +43,8 @@ contract Lottery is Ownable {
     }
 
     function spinWheel() external {
-        require(block.timestamp >= lastSpinTime[msg.sender] + spinCooldown, 'Spin cooldown active');
-        require(token.transferFrom(msg.sender, address(this), ticketPrice), 'Insufficient tokens');
+        require(block.timestamp >= lastSpinTime[msg.sender] + spinCooldown, "Spin cooldown active");
+        require(token.transferFrom(msg.sender, address(this), ticketPrice), "Insufficient tokens");
 
         uint256 random = uint256(keccak256(abi.encodePacked(block.prevrandao, block.timestamp, msg.sender))) % 100;
 
@@ -52,28 +52,28 @@ contract Lottery is Ownable {
         uint256 points;
 
         if (random < 50) {
-            rarity = 'Common';
+            rarity = "Common";
             points = 10;
         } else if (random < 75) {
-            rarity = 'Uncommon';
+            rarity = "Uncommon";
             points = 25;
         } else if (random < 85) {
-            rarity = 'Rare';
+            rarity = "Rare";
             points = 50;
         } else if (random < 90) {
-            rarity = 'Epic';
+            rarity = "Epic";
             points = 75;
         } else if (random < 97) {
-            rarity = 'Legendary';
+            rarity = "Legendary";
             points = 100;
         } else if (random < 99) {
-            rarity = 'Mythic';
+            rarity = "Mythic";
             points = 200;
         } else if (random < 100) {
-            rarity = 'Godlike';
+            rarity = "Godlike";
             points = 300;
         } else {
-            rarity = 'Unique';
+            rarity = "Unique";
             points = 500;
         }
 
@@ -134,11 +134,11 @@ contract Lottery is Ownable {
 
     function withdrawTokens() external {
         uint256 points = userPoints[msg.sender];
-        require(points > 0, 'No points to withdraw');
-        require(totalRewardPool >= points, 'Not enough tokens in contract for rewards');
+        require(points > 0, "No points to withdraw");
+        require(totalRewardPool >= points, "Not enough tokens in contract for rewards");
 
         uint256 transferAmount = points * (10 ** 18);
-        require(token.transfer(msg.sender, transferAmount), 'Transfer failed');
+        require(token.transfer(msg.sender, transferAmount), "Transfer failed");
 
         totalRewardPool -= points;
         userPoints[msg.sender] = 0;
@@ -168,11 +168,11 @@ contract Lottery is Ownable {
 
     function burnNft(uint256 tokenId) external {
         (, uint256 points, ) = nftCollection.getNFTDetails(tokenId);
-        require(points > 0, 'Invalid NFT points');
-        require(totalRewardPool >= points, 'Not enough tokens in contract for rewards');
+        require(points > 0, "Invalid NFT points");
+        require(totalRewardPool >= points, "Not enough tokens in contract for rewards");
 
         uint256 transferAmount = points * (10 ** 18);
-        require(token.transfer(msg.sender, transferAmount), 'Transfer failed');
+        require(token.transfer(msg.sender, transferAmount), "Transfer failed");
 
         totalRewardPool -= points;
         userPoints[msg.sender] -= points;
@@ -187,10 +187,10 @@ contract Lottery is Ownable {
     }
 
     function addRewardTokens(uint256 amount) external onlyOwner {
-        require(amount > 0, 'Amount should be greater than 0');
+        require(amount > 0, "Amount should be greater than 0");
 
         uint256 allowance = token.allowance(msg.sender, address(this));
-        require(allowance >= amount, 'Allowance not sufficient to add reward tokens');
+        require(allowance >= amount, "Allowance not sufficient to add reward tokens");
 
         token.transferFrom(msg.sender, address(this), amount);
         totalRewardPool += amount;
