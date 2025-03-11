@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Referral {
     IERC20 public token;
@@ -31,7 +31,7 @@ contract Referral {
     event RewardTokensAdded(uint256 amount);
 
     modifier onlyOwner() {
-        require(msg.sender == owner, 'Not the owner');
+        require(msg.sender == owner, "Not the owner");
         _;
     }
 
@@ -41,10 +41,10 @@ contract Referral {
     }
 
     function register(address _referrer) external {
-        require(!users[msg.sender].exists, 'User already registered');
-        require(_referrer != msg.sender, 'Invalid referrer');
-        require(_referrer == address(0) || users[_referrer].exists, 'Invalid referrer');
-        require(totalRewardPool >= REWARD_AMOUNT, 'Not enough tokens in contract for rewards');
+        require(!users[msg.sender].exists, "User already registered");
+        require(_referrer != msg.sender, "Invalid referrer");
+        require(_referrer == address(0) || users[_referrer].exists, "Invalid referrer");
+        require(totalRewardPool >= REWARD_AMOUNT, "Not enough tokens in contract for rewards");
 
         users[msg.sender].exists = true;
         users[msg.sender].registrationTime = block.timestamp;
@@ -58,7 +58,7 @@ contract Referral {
 
             totalRewardPool -= REWARD_AMOUNT;
 
-            require(token.transfer(_referrer, REWARD_AMOUNT), 'Reward transfer failed');
+            require(token.transfer(_referrer, REWARD_AMOUNT), "Reward transfer failed");
             emit RewardIssued(_referrer, REWARD_AMOUNT);
         }
 
@@ -93,25 +93,25 @@ contract Referral {
     }
 
     function getReferralDetails(address _user) external view returns (ReferralDetail[] memory) {
-        require(users[_user].exists, 'User not registered');
+        require(users[_user].exists, "User not registered");
         return users[_user].referralDetails;
     }
 
     function getUserDetails(address _user) external view returns (uint256 referralsCount, uint256 registrationTime) {
-        require(users[_user].exists, 'User not registered');
+        require(users[_user].exists, "User not registered");
         return (users[_user].referralsCount, users[_user].registrationTime);
     }
 
     function withdrawTokens() external onlyOwner {
         uint256 balance = token.balanceOf(address(this));
-        require(token.transfer(owner, balance), 'Withdraw failed');
+        require(token.transfer(owner, balance), "Withdraw failed");
     }
 
     function addRewardTokens(uint256 amount) external onlyOwner {
-        require(amount > 0, 'Amount should be greater than 0');
+        require(amount > 0, "Amount should be greater than 0");
 
         uint256 allowance = token.allowance(msg.sender, address(this));
-        require(allowance >= amount, 'Allowance not sufficient to add reward tokens');
+        require(allowance >= amount, "Allowance not sufficient to add reward tokens");
 
         token.transferFrom(msg.sender, address(this), amount);
         totalRewardPool += amount;
