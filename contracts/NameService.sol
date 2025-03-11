@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 contract NameService {
-    uint256 public constant registrationFee = 20 * 10 ** 18;
+    uint256 public registrationFee = 20 * 10 ** 18;
     string public domainExtension = ".chai";
     address public owner;
 
