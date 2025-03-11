@@ -3,7 +3,7 @@ pragma solidity ^0.8.28;
 
 contract NameService {
     uint256 public constant registrationFee = 20 * 10 ** 18;
-    string public domainExtension = '.chai';
+    string public domainExtension = ".chai";
     address public owner;
 
     mapping(string => address) public nameToOwner;
@@ -12,7 +12,7 @@ contract NameService {
     event NameRegistered(address indexed owner, string indexed name);
 
     modifier onlyOwner() {
-        require(msg.sender == owner, 'Only contract owner can perform this action');
+        require(msg.sender == owner, "Only contract owner can perform this action");
         _;
     }
 
@@ -21,10 +21,10 @@ contract NameService {
     }
 
     function registerName(string calldata name) external payable {
-        require(bytes(name).length > 0, 'Name cannot be empty');
-        require(msg.value >= registrationFee, 'Insufficient registration fee');
+        require(bytes(name).length > 0, "Name cannot be empty");
+        require(msg.value >= registrationFee, "Insufficient registration fee");
         string memory fullName = string(abi.encodePacked(name, domainExtension));
-        require(nameToOwner[fullName] == address(0), 'Name already registered');
+        require(nameToOwner[fullName] == address(0), "Name already registered");
 
         nameToOwner[fullName] = msg.sender;
         ownerToNames[msg.sender].push(fullName);
