@@ -11,16 +11,16 @@ contract TokenFactory {
     event TokenCreated(address indexed tokenAddress, string name, string symbol, uint256 totalSupply);
     event FeeUpdated(uint256 newFee);
 
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the owner can perform this action");
+        _;
+    }
+
     constructor(address _nativeContract, uint256 _fee) {
         require(_nativeContract != address(0), "Invalid native contract address");
         nativeContract = _nativeContract;
         fee = _fee;
         owner = msg.sender;
-    }
-
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only the owner can perform this action");
-        _;
     }
 
     function updateFee(uint256 newFee) public onlyOwner {
