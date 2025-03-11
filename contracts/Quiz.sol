@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/access/Ownable.sol';
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Quiz is Ownable {
     IERC20 public token;
@@ -32,10 +32,10 @@ contract Quiz is Ownable {
         uint256 ownerShare = 5 * 10 ** 18;
         uint256 contractShare = 5 * 10 ** 18;
 
-        require(token.balanceOf(msg.sender) >= requiredAmount, 'Not enough token to join');
+        require(token.balanceOf(msg.sender) >= requiredAmount, "Not enough token to join");
 
         uint256 allowance = token.allowance(msg.sender, address(this));
-        require(allowance >= requiredAmount, 'Allowance not sufficient to join quiz');
+        require(allowance >= requiredAmount, "Allowance not sufficient to join quiz");
 
         token.transferFrom(msg.sender, owner(), ownerShare);
 
@@ -53,8 +53,8 @@ contract Quiz is Ownable {
     }
 
     function submitAnswer(bool isCorrect, address user) external {
-        require(isParticipant[user], 'User not joined in quiz');
-        require(currentQuestionIndex[user] < totalQuestions, 'Quiz completed');
+        require(isParticipant[user], "User not joined in quiz");
+        require(currentQuestionIndex[user] < totalQuestions, "Quiz completed");
 
         if (block.timestamp - questionStartTime[user] > timePerQuestion) {
             skipQuestion(user);
@@ -72,8 +72,8 @@ contract Quiz is Ownable {
     }
 
     function skipQuestion(address user) public {
-        require(isParticipant[user], 'User not joined in quiz');
-        require(currentQuestionIndex[user] < totalQuestions, 'Quiz completed');
+        require(isParticipant[user], "User not joined in quiz");
+        require(currentQuestionIndex[user] < totalQuestions, "Quiz completed");
 
         currentQuestionIndex[user]++;
         questionStartTime[user] = block.timestamp;
@@ -93,8 +93,8 @@ contract Quiz is Ownable {
     }
 
     function claimRewards() external {
-        require(userPoints[msg.sender] > 0, 'No points to claim');
-        require(isParticipant[msg.sender], 'Not a participant');
+        require(userPoints[msg.sender] > 0, "No points to claim");
+        require(isParticipant[msg.sender], "Not a participant");
 
         _claimRewards(msg.sender);
     }
@@ -102,7 +102,7 @@ contract Quiz is Ownable {
     function _claimRewards(address user) internal {
         uint256 reward = calculateReward(user);
 
-        require(totalRewardPool >= reward, 'Not enough tokens in contract for rewards');
+        require(totalRewardPool >= reward, "Not enough tokens in contract for rewards");
 
         totalRewardPool -= reward;
         token.transfer(user, reward);
@@ -116,10 +116,10 @@ contract Quiz is Ownable {
     }
 
     function addRewardTokens(uint256 amount) external onlyOwner {
-        require(amount > 0, 'Amount should be greater than 0');
+        require(amount > 0, "Amount should be greater than 0");
 
         uint256 allowance = token.allowance(msg.sender, address(this));
-        require(allowance >= amount, 'Allowance not sufficient to add reward tokens');
+        require(allowance >= amount, "Allowance not sufficient to add reward tokens");
 
         token.transferFrom(msg.sender, address(this), amount);
         totalRewardPool += amount;
