@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
-import '@openzeppelin/contracts/access/Ownable.sol';
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Token is ERC20, Ownable {
     uint256 public initialSupply = 1_000_000 * 10 ** 18;
@@ -16,7 +16,7 @@ contract Token is ERC20, Ownable {
     event TokensMinted(address indexed to, uint256 amount);
     event TokensBurned(address indexed burner, uint256 amount);
 
-    constructor() ERC20('Dion Token V1', 'DNT1') Ownable(msg.sender) {
+    constructor() ERC20("Dion Token V1", "DNT1") Ownable(msg.sender) {
         _mint(msg.sender, initialSupply);
     }
 
@@ -27,15 +27,15 @@ contract Token is ERC20, Ownable {
     }
 
     function claimFaucet() external {
-        require(totalFaucetDistributed + faucetAmount <= faucetLimit, 'Faucet limit reached');
+        require(totalFaucetDistributed + faucetAmount <= faucetLimit, "Faucet limit reached");
 
         require(
             lastClaimTime[msg.sender] == 0 || block.timestamp >= lastClaimTime[msg.sender] + 1 days,
-            'You can only claim once every 24 hours'
+            "You can only claim once every 24 hours"
         );
 
         address owner = owner();
-        require(balanceOf(owner) >= faucetAmount, 'Owner has insufficient tokens');
+        require(balanceOf(owner) >= faucetAmount, "Owner has insufficient tokens");
 
         _transfer(owner, msg.sender, faucetAmount);
 
@@ -46,7 +46,7 @@ contract Token is ERC20, Ownable {
     }
 
     function burn(uint256 amount) external {
-        require(balanceOf(msg.sender) >= amount, 'Insufficient balance to burn');
+        require(balanceOf(msg.sender) >= amount, "Insufficient balance to burn");
         _burn(msg.sender, amount);
 
         emit TokensBurned(msg.sender, amount);
