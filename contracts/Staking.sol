@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/access/Ownable.sol';
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Staking is Ownable {
     IERC20 public token;
@@ -26,11 +26,11 @@ contract Staking is Ownable {
     }
 
     function stake(uint256 amount) external {
-        require(amount > 0, 'Amount should be greater than 0');
-        require(token.balanceOf(msg.sender) >= amount, 'Insufficient balance for staking');
+        require(amount > 0, "Amount should be greater than 0");
+        require(token.balanceOf(msg.sender) >= amount, "Insufficient balance for staking");
 
         uint256 allowance = token.allowance(msg.sender, address(this));
-        require(allowance >= amount, 'Allowance not sufficient for staking');
+        require(allowance >= amount, "Allowance not sufficient for staking");
 
         token.transferFrom(msg.sender, address(this), amount);
 
@@ -47,8 +47,8 @@ contract Staking is Ownable {
     }
 
     function unstake(uint256 amount) external {
-        require(amount > 0, 'Amount must be greater than zero');
-        require(stakedAmounts[msg.sender] >= amount, 'Not enough staked');
+        require(amount > 0, "Amount must be greater than zero");
+        require(stakedAmounts[msg.sender] >= amount, "Not enough staked");
 
         _claimRewards(msg.sender);
         stakedAmounts[msg.sender] -= amount;
@@ -67,7 +67,7 @@ contract Staking is Ownable {
     }
 
     function claimRewards() external {
-        require(stakedAmounts[msg.sender] > 0, 'No tokens staked');
+        require(stakedAmounts[msg.sender] > 0, "No tokens staked");
         _claimRewards(msg.sender);
     }
 
@@ -75,7 +75,7 @@ contract Staking is Ownable {
         uint256 stakingDuration = block.timestamp - lastClaimedTimestamp[user];
         uint256 reward = (rewardPerSecond * stakingDuration * stakedAmounts[user]) / 1e18;
 
-        require(totalRewardPool >= reward, 'Not enough tokens in contract for rewards');
+        require(totalRewardPool >= reward, "Not enough tokens in contract for rewards");
 
         totalRewardPool -= reward;
         token.transfer(user, reward);
@@ -85,10 +85,10 @@ contract Staking is Ownable {
     }
 
     function addRewardTokens(uint256 amount) external onlyOwner {
-        require(amount > 0, 'Amount should be greater than 0');
+        require(amount > 0, "Amount should be greater than 0");
 
         uint256 allowance = token.allowance(msg.sender, address(this));
-        require(allowance >= amount, 'Allowance not sufficient to add reward tokens');
+        require(allowance >= amount, "Allowance not sufficient to add reward tokens");
 
         token.transferFrom(msg.sender, address(this), amount);
         totalRewardPool += amount;
@@ -97,7 +97,7 @@ contract Staking is Ownable {
     }
 
     function setRewardPerSecond(uint256 newRewardPerSecond) external onlyOwner {
-        require(newRewardPerSecond > 0, 'Reward per second must be greater than 0');
+        require(newRewardPerSecond > 0, "Reward per second must be greater than 0");
         rewardPerSecond = newRewardPerSecond;
 
         emit RewardPerSecondUpdated(newRewardPerSecond);
