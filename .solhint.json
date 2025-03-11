@@ -11,7 +11,7 @@
                 "ignoreConstructors": true
             }
         ],
-        "not-rely-on-time": "warn",
+        "not-rely-on-time": "off",
         "reason-string": [
             "warn",
             {
@@ -24,6 +24,10 @@
         "no-empty-blocks": "warn",
         "const-name-snakecase": "warn",
         "func-name-mixedcase": "warn",
-        "var-name-mixedcase": "warn"
+        "var-name-mixedcase": "warn",
+        "one-contract-per-file": "off",
+        "no-global-import": "off",
+        "gas-custom-errors": "off",
+        "custom-errors": "off"
     }
 }
