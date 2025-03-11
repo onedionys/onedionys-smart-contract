@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
-import '@openzeppelin/contracts/access/Ownable.sol';
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract NFTCollection is ERC721URIStorage, Ownable {
     struct NFTDetails {
@@ -21,19 +21,19 @@ contract NFTCollection is ERC721URIStorage, Ownable {
     event NFTMinted(address indexed to, uint256 tokenId, string rarity, uint256 points, string cid);
     event NFTBurned(address indexed owner, uint256 tokenId);
 
-    constructor() ERC721('Dion NFT V1', 'DNN1') Ownable(msg.sender) {
-        rarityMetadataCID['Common'] = 'bafkreiglegydzpdxrvszs554pogs7uuvc5iqykmsibk6dtcbiohqrgnohu';
-        rarityMetadataCID['Uncommon'] = 'bafkreihxegzellny3ftx3zcti2aorl5n7iwdkb7cdwwdlvna5hq3e2hgom';
-        rarityMetadataCID['Rare'] = 'bafkreiejp4jbxq3jc6utjvehlflga37rhqd7eudr5fasucvo5ffaqnmfje';
-        rarityMetadataCID['Epic'] = 'bafkreicqyeyz4bnn4jb4f3r3y6fl7524grxrcddflvy5rccylo6saa5l6y';
-        rarityMetadataCID['Legendary'] = 'bafkreienytu72bahf5jbf4u5477niaeull5s2pl2dk4pz6cses5cbajnya';
-        rarityMetadataCID['Mythic'] = 'bafkreidw7qtpq2n2qte66hqftpavcfdyamo44nwqsn2sfachjvgtofyqpu';
-        rarityMetadataCID['Godlike'] = 'bafkreicmouxjpsgabx7rwtnwavj5lllstwdiihbovht2ajspadpbfp2bmm';
-        rarityMetadataCID['Unique'] = 'bafkreiaijtv5ipk3asyvnecjkqpemfpbuzu2janzihbdabwn4z4qnhktm4';
+    constructor() ERC721("Dion NFT V1", "DNN1") Ownable(msg.sender) {
+        rarityMetadataCID["Common"] = "bafkreiglegydzpdxrvszs554pogs7uuvc5iqykmsibk6dtcbiohqrgnohu";
+        rarityMetadataCID["Uncommon"] = "bafkreihxegzellny3ftx3zcti2aorl5n7iwdkb7cdwwdlvna5hq3e2hgom";
+        rarityMetadataCID["Rare"] = "bafkreiejp4jbxq3jc6utjvehlflga37rhqd7eudr5fasucvo5ffaqnmfje";
+        rarityMetadataCID["Epic"] = "bafkreicqyeyz4bnn4jb4f3r3y6fl7524grxrcddflvy5rccylo6saa5l6y";
+        rarityMetadataCID["Legendary"] = "bafkreienytu72bahf5jbf4u5477niaeull5s2pl2dk4pz6cses5cbajnya";
+        rarityMetadataCID["Mythic"] = "bafkreidw7qtpq2n2qte66hqftpavcfdyamo44nwqsn2sfachjvgtofyqpu";
+        rarityMetadataCID["Godlike"] = "bafkreicmouxjpsgabx7rwtnwavj5lllstwdiihbovht2ajspadpbfp2bmm";
+        rarityMetadataCID["Unique"] = "bafkreiaijtv5ipk3asyvnecjkqpemfpbuzu2janzihbdabwn4z4qnhktm4";
     }
 
     modifier onlyLotteryContract() {
-        require(msg.sender == lotteryContract, 'Caller is not the lottery contract');
+        require(msg.sender == lotteryContract, "Caller is not the lottery contract");
         _;
     }
 
@@ -50,7 +50,7 @@ contract NFTCollection is ERC721URIStorage, Ownable {
 
         nftDetails[tokenId] = NFTDetails(rarity, points, metadataCID);
         userTokens[to].push(tokenId);
-        _setTokenURI(tokenId, string(abi.encodePacked('https://ipfs.io/ipfs/', metadataCID)));
+        _setTokenURI(tokenId, string(abi.encodePacked("https://ipfs.io/ipfs/", metadataCID)));
 
         nextTokenId++;
 
@@ -94,7 +94,7 @@ contract NFTCollection is ERC721URIStorage, Ownable {
 
     function uint2str(uint256 _i) internal pure returns (string memory _uintAsString) {
         if (_i == 0) {
-            return '0';
+            return "0";
         }
         uint256 j = _i;
         uint256 length;
