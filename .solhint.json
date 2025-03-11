@@ -27,7 +27,6 @@
         "var-name-mixedcase": "warn",
         "one-contract-per-file": "off",
         "no-global-import": "off",
-        "gas-custom-errors": "off",
-        "custom-errors": "off"
+        "gas-custom-errors": "off"
     }
 }
