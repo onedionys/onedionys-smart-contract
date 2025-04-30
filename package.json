@@ -37,7 +37,7 @@
     "dependencies": {
         "@discord/embedded-app-sdk": "^1.4.2",
         "@discordjs/voice": "^0.18.0",
-        "@google/generative-ai": "^0.21.0",
+        "@google/generative-ai": "^0.24.1",
         "@openzeppelin/contracts": "^5.2.0",
         "@safe-global/api-kit": "^2.4.1",
         "@safe-global/protocol-kit": "^5.1.1",
